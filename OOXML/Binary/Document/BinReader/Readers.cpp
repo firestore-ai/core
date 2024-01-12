@@ -1031,6 +1031,11 @@ int Binary_pPrReader::ReadContent(BYTE type, long length, void* poResult)
 		pPPr->m_oSuppressLineNumbers.Init();
 		pPPr->m_oSuppressLineNumbers->m_oVal.FromBool(m_oBufferedStream.GetBool());
 	}break;
+	case c_oSerProp_pPrType::docGrid:
+	{
+		pPPr->m_oSnapToGrid.Init();
+		pPPr->m_oSnapToGrid->m_oVal.FromBool(m_oBufferedStream.GetBool());
+	}break;
 	case c_oSerProp_pPrType::CnfStyle:
 	{
 		pPPr->m_oCnfStyle.Init();
@@ -1476,6 +1481,11 @@ int Binary_pPrReader::Read_SecPr(BYTE type, long length, void* poResult)
 		pSectPr->m_oPgMar.Init();
 		READ2_DEF(length, res, this->Read_pgMar, pSectPr->m_oPgMar.GetPointer());
 	}
+	else if ( c_oSerProp_secPrType::docGrid == type )
+	{
+		pSectPr->m_oDocGrid.Init();
+		READ2_DEF(length, res, this->Read_docGrid, pSectPr->m_oDocGrid.GetPointer());
+	}
 	else if (c_oSerProp_secPrType::setting == type)
 	{
 		READ2_DEF(length, res, this->Read_pgSetting, poResult);
@@ -1732,6 +1742,27 @@ int Binary_pPrReader::Read_pgSz(BYTE type, long length, void* poResult)
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;
+}
+int Binary_pPrReader::Read_docGrid(BYTE type, long length, void* poResult)
+{
+	int res = c_oSerConstants::ReadOk;
+	ComplexTypes::Word::CDocGrid* pDocGrid = static_cast<ComplexTypes::Word::CDocGrid*>(poResult);
+
+	if ( c_oSerProp_secPrDocGridType::Type == type ) 
+	{		
+		pDocGrid->m_oType.Init();
+		pDocGrid->m_oType.SetValueFromByte(m_oBufferedStream.GetChar());
+	}
+	else if ( c_oSerProp_secPrDocGridType::linePitch == type ) 
+	{
+		pDocGrid->m_oLinePitch.Init();
+		pDocGrid->m_oLinePitch->FromTwips(m_oBufferedStream.GetLonge());
+	}
+	if ( c_oSerProp_secPrDocGridType::charSpace == type ) 
+	{
+		pDocGrid->m_oCharSpace.Init();
+		pDocGrid->m_oCharSpace.FromEmu(m_oBufferedStream.GetLong());
+	}
 }
 int Binary_pPrReader::Read_pgMar(BYTE type, long length, void* poResult)
 {

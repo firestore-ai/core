@@ -516,7 +516,7 @@ namespace OOX
 
 			nullable<ComplexTypes::Word::COnOff2>		m_oBidi;
 			nullable<OOX::Logic::CColumns>				m_oCols;
-			nullable<ComplexTypes::Word::CDocGrid>		m_oDocGrid;
+			nullable<ComplexTypes::Word::CDocGrid>		m_oDocGrid;			
 			nullable<OOX::Logic::CEdnProps>				m_oEndnotePr;
 			std::vector<ComplexTypes::Word::CHdrFtrRef*>	m_arrFooterReference;
 			nullable<OOX::Logic::CFtnProps>				m_oFootnotePr;
