@@ -1031,7 +1031,7 @@ int Binary_pPrReader::ReadContent(BYTE type, long length, void* poResult)
 		pPPr->m_oSuppressLineNumbers.Init();
 		pPPr->m_oSuppressLineNumbers->m_oVal.FromBool(m_oBufferedStream.GetBool());
 	}break;
-	case c_oSerProp_pPrType::docGrid:
+	case c_oSerProp_pPrType::SnapToGrid:
 	{
 		pPPr->m_oSnapToGrid.Init();
 		pPPr->m_oSnapToGrid->m_oVal.FromBool(m_oBufferedStream.GetBool());
@@ -1751,17 +1751,17 @@ int Binary_pPrReader::Read_docGrid(BYTE type, long length, void* poResult)
 	if ( c_oSerProp_secPrDocGridType::Type == type ) 
 	{		
 		pDocGrid->m_oType.Init();
-		pDocGrid->m_oType.SetValueFromByte(m_oBufferedStream.GetChar());
+		pDocGrid->m_oType->SetValueFromByte(m_oBufferedStream.GetUChar());
 	}
 	else if ( c_oSerProp_secPrDocGridType::linePitch == type ) 
 	{
 		pDocGrid->m_oLinePitch.Init();
-		pDocGrid->m_oLinePitch->FromTwips(m_oBufferedStream.GetLonge());
+		pDocGrid->m_oLinePitch->SetValue(m_oBufferedStream.GetLong());
 	}
 	if ( c_oSerProp_secPrDocGridType::charSpace == type ) 
 	{
 		pDocGrid->m_oCharSpace.Init();
-		pDocGrid->m_oCharSpace.FromEmu(m_oBufferedStream.GetLong());
+		pDocGrid->m_oCharSpace->SetValue(m_oBufferedStream.GetLong());
 	}
 }
 int Binary_pPrReader::Read_pgMar(BYTE type, long length, void* poResult)

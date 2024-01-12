@@ -1535,14 +1535,14 @@ void Binary_pPrWriter::WriteDocGridPr(OOX::Logic::CSectionProperty* pSectPr)
 	if (pDocGrid->m_oLinePitch.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerProp_secPrDocGridType::linePitch);
-		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::LONG);
-		m_oBcw.m_oStream.WriteLONG(pDocGrid->m_oLinePitch->ToTwips());		
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
+		m_oBcw.m_oStream.WriteLONG(pDocGrid->m_oLinePitch->GetValue());		
 	}
 	if (pDocGrid->m_oCharSpace.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerProp_secPrDocGridType::charSpace);
-		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::LONG);
-		m_oBcw.m_oStream.WriteLONG(pDocGrid->m_oCharSpace->ToEmu());		
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
+		m_oBcw.m_oStream.WriteLONG(pDocGrid->m_oCharSpace->GetValue());		
 	}		
 }
 
