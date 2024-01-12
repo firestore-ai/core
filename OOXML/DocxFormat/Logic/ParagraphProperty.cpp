@@ -593,7 +593,7 @@ namespace OOX
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
 				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-
+				
 				if ( L"adjustRightInd" == sName )
 					m_oAdjustRightInd = oReader;
 				else if ( L"autoSpaceDE" == sName )
