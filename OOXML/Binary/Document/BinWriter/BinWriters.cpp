@@ -1524,25 +1524,27 @@ void Binary_pPrWriter::WriteSectPr (OOX::Logic::CSectionProperty* pSectPr)
 }
 void Binary_pPrWriter::WriteDocGridPr(OOX::Logic::CSectionProperty* pSectPr)
 {
-	auto pDocGrid = pSectPr->m_oDocGrid;
-	
-	if (pDocGrid->m_oType.IsInit())
+	const ComplexTypes::Word::CDocGrid& docGrid = pSectPr->m_oDocGrid.get();
+
+	if (docGrid.m_oType.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerProp_secPrDocGridType::Type);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-		m_oBcw.m_oStream.WriteBYTE(pDocGrid->m_oType->GetValue());		
+		m_oBcw.m_oStream.WriteBYTE(docGrid.m_oType->GetValue());				
 	}
-	if (pDocGrid->m_oLinePitch.IsInit())
+	
+	if (docGrid.m_oLinePitch.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerProp_secPrDocGridType::linePitch);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
-		m_oBcw.m_oStream.WriteLONG(pDocGrid->m_oLinePitch->GetValue());		
+		m_oBcw.m_oStream.WriteLONG(docGrid.m_oLinePitch->GetValue());		
 	}
-	if (pDocGrid->m_oCharSpace.IsInit())
+
+	if (docGrid.m_oCharSpace.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerProp_secPrDocGridType::charSpace);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
-		m_oBcw.m_oStream.WriteLONG(pDocGrid->m_oCharSpace->GetValue());		
+		m_oBcw.m_oStream.WriteLONG(docGrid.m_oCharSpace->GetValue());		
 	}		
 }
 

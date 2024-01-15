@@ -1758,11 +1758,15 @@ int Binary_pPrReader::Read_docGrid(BYTE type, long length, void* poResult)
 		pDocGrid->m_oLinePitch.Init();
 		pDocGrid->m_oLinePitch->SetValue(m_oBufferedStream.GetLong());
 	}
-	if ( c_oSerProp_secPrDocGridType::charSpace == type ) 
+	else if ( c_oSerProp_secPrDocGridType::charSpace == type ) 
 	{
 		pDocGrid->m_oCharSpace.Init();
 		pDocGrid->m_oCharSpace->SetValue(m_oBufferedStream.GetLong());
 	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+
+	return res;
 }
 int Binary_pPrReader::Read_pgMar(BYTE type, long length, void* poResult)
 {
