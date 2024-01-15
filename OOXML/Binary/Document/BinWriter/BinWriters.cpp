@@ -1517,7 +1517,7 @@ void Binary_pPrWriter::WriteSectPr (OOX::Logic::CSectionProperty* pSectPr)
 	}
 	if (pSectPr->m_oDocGrid.IsInit()) 
 	{
-		nCurPos = m_oBcw.WriteItemStart(c_oSerProp_secPrType::rtlGutter);
+		nCurPos = m_oBcw.WriteItemStart(c_oSerProp_secPrType::docGrid);
 			WriteDocGridPr(pSectPr);			
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
