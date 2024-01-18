@@ -209,6 +209,7 @@ namespace BinDocxRW
 							 nullable<ComplexTypes::Word::CEdnPos>* endPos, std::vector<OOX::CFtnEdnSepRef*>* refs);
 		void WriteNumFmt(const ComplexTypes::Word::CNumFmt& oNumFmt);
 		void WriteCnfStyle(ComplexTypes::Word::CCnf *cnf);
+		void WriteDocGridPr(OOX::Logic::CSectionProperty* pSectPr);
 	};
 	class Binary_tblPrWriter
 	{

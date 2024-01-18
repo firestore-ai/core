@@ -263,6 +263,7 @@ namespace OOX
             nullable<ComplexTypes::Word::COnOff2>	m_oTopLinePunct;
             nullable<ComplexTypes::Word::COnOff2>	m_oWidowControl;
             nullable<ComplexTypes::Word::COnOff2>	m_oWordWrap;
+
 		};
 	} // namespace Logic
 } // namespace OOX

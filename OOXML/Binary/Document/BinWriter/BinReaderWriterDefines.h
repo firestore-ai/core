@@ -384,7 +384,9 @@ extern int g_nCurFormatVersion;
 		Tab_Item_PosTwips = 42,
 		Tab_Item_Val = 43,
 		SuppressLineNumbers = 44,
-		CnfStyle = 45
+		CnfStyle = 45,
+		SnapToGrid = 46
+
 	};}
 	namespace c_oSerProp_rPrType{enum c_oSerProp_rPrType
 	{
@@ -504,7 +506,8 @@ extern int g_nCurFormatVersion;
 		footnotePr = 10,
 		endnotePr = 11,
 		rtlGutter = 12,
-		lnNumType = 13
+		lnNumType = 13,
+		docGrid = 14
 	};}
 	namespace c_oSerProp_secPrSettingsType{enum c_oSerProp_secPrSettingsType
 	{
@@ -522,6 +525,13 @@ extern int g_nCurFormatVersion;
 		Distance = 1,
 		Restart = 2,
 		Start = 3
+	};}
+	namespace c_oSerProp_secPrDocGridType{enum c_oSerProp_secPrDocGridType 
+	{
+		Type = 0,
+		linePitch = 1,
+		charSpace = 2
+	
 	};}
 	namespace c_oSerParType{enum c_oSerParType
 	{
