@@ -505,6 +505,7 @@ namespace OOX
 			m_oSpacing.reset();
 			m_oSuppressAutoHyphens.reset();
 			m_oSuppressLineNumbers.reset();
+			m_oSnapToGrid.reset();
 			m_oSuppressOverlap.reset();
 			m_oTabs.reset();
 			m_oTextAlignment.reset();
@@ -522,7 +523,7 @@ namespace OOX
 			m_oKinsoku.IsInit() ||	m_oMirrorIndents.IsInit() ||  m_oNumPr.IsInit() ||  m_oOutlineLvl.IsInit() ||  
 			m_oOverflowPunct.IsInit() ||  m_oPageBreakBefore.IsInit() ||  m_oPBdr.IsInit() ||  m_oPPrChange.IsInit() ||  
 			m_oPStyle.IsInit() ||  m_oRPr.IsInit() ||  m_oSectPr.IsInit() ||  m_oShd.IsInit() ||  m_oSnapToGrid.IsInit() ||  
-			m_oSpacing.IsInit() ||	m_oSuppressAutoHyphens.IsInit() ||  m_oSuppressLineNumbers.IsInit() ||  m_oSuppressOverlap.IsInit() ||  m_oTabs.IsInit() ||  
+			m_oSpacing.IsInit() ||	m_oSuppressAutoHyphens.IsInit() ||  m_oSuppressLineNumbers.IsInit() || m_oSnapToGrid.IsInit() ||  m_oSuppressOverlap.IsInit() ||  m_oTabs.IsInit() ||  
 			m_oTextAlignment.IsInit() ||  m_oTextboxTightWrap.IsInit() ||  m_oTextDirection.IsInit() ||  m_oTopLinePunct.IsInit() ||  
 			m_oWidowControl.IsInit() ||  m_oWordWrap.IsInit() );
 		}
@@ -571,6 +572,7 @@ namespace OOX
 					if (L"w:spacing" == strName)				m_oSpacing = oChild;
 					if (L"w:suppressAutoHyphens" == strName)	m_oSuppressAutoHyphens = oChild;
 					if (L"w:suppressLineNumbers" == strName)	m_oSuppressLineNumbers = oChild;
+					if (L"w:snapToGrid" == strName)				m_oSnapToGrid = oChild;
 					if (L"w:suppressOverlap" == strName)		m_oSuppressOverlap = oChild;
 					if (L"w:tabs" == strName)					m_oTabs = oChild;
 					if (L"w:textAlignment" == strName)			m_oTextAlignment = oChild;
@@ -593,7 +595,7 @@ namespace OOX
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
 				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-
+				
 				if ( L"adjustRightInd" == sName )
 					m_oAdjustRightInd = oReader;
 				else if ( L"autoSpaceDE" == sName )
@@ -672,6 +674,8 @@ namespace OOX
 					m_oSuppressAutoHyphens = oReader;
 				else if ( L"suppressLineNumbers" == sName )
 					m_oSuppressLineNumbers = oReader;
+				else if ( L"snapToGrid" == sName)
+					m_oSnapToGrid = oReader;
 				else if ( L"suppressOverlap" == sName )
 					m_oSuppressOverlap = oReader;
 				else if ( L"tabs" == sName )
@@ -739,7 +743,7 @@ namespace OOX
 				sResult += L"<w:suppressLineNumbers ";
 				sResult += m_oSuppressLineNumbers->ToString();
 				sResult += L"/>";
-			}
+			}			
 			if (m_oPBdr.IsInit())
 			{
 				sResult += m_oPBdr->toXML();
