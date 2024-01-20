@@ -927,10 +927,12 @@ namespace SimpleTypes
 
 	EDocGrid CDocGrid::FromString(const std::wstring &sValue)
 	{
-		if      ( (L"default")       == sValue ) this->m_eValue = docgridDefault;
-		else if ( (L"lines")         == sValue ) this->m_eValue = docgridLines;
-		else if ( (L"linesAndChars") == sValue ) this->m_eValue = docgridLinesAndChars;
-		else if ( (L"snapToChars")   == sValue ) this->m_eValue = docgridSnapToChars;
+		if      ( (L"default")         == sValue ) this->m_eValue = docgridDefault;
+		else if ( (L"lines")           == sValue ) this->m_eValue = docgridLines;
+		else if ( (L"linesAndChars")   == sValue ) this->m_eValue = docgridLinesAndChars;
+		else if ( (L"lines-and-chars") == sValue ) this->m_eValue = docgridLinesAndChars;
+		else if ( (L"snapToChars")     == sValue ) this->m_eValue = docgridSnapToChars;
+		else if ( (L"snap-to-chars")   == sValue ) this->m_eValue = docgridSnapToChars;
 		else                                      this->m_eValue = docgridDefault;
 
 		return this->m_eValue;
