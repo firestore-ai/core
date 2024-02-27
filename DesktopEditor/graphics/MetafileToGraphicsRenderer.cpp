@@ -53,6 +53,8 @@ namespace NSOnlineOfficeBinToPdf
 		//     nRasterH = (int)((pageH * m_internal->m_dDpiY / 25.4) + 0.5);
 		// 3 - special mode for clouds (see code)
 		//
+		// 11 -- dpi=300, 其他的跟2一样. chongxishen,
+		//
 		// saveFlags & 1: change w/h by orientation
 		int m_nSaveType;
 		bool m_bIsOnlyFirst;
@@ -82,6 +84,16 @@ namespace NSOnlineOfficeBinToPdf
 
 		~CMetafileToRenderterRaster_private()
 		{
+		}
+
+		void Dpi300() {
+			m_dDpiX = 300;
+			m_dDpiY = 300;
+		}
+
+		void ResetDpi() {
+			m_dDpiX = 96.0;
+			m_dDpiY = 96.0;
 		}
 	};
 
@@ -168,10 +180,16 @@ namespace NSOnlineOfficeBinToPdf
 				nRasterW = (int)(w * dKoef1 + 0.5);
 				nRasterH = (int)(h * dKoef1 + 0.5);
 			}
-			else if (2 == nSaveType)
+			// chongxishen
+			else if (2 == nSaveType || 11 == nSaveType)
 			{
 				double w = oInfo.arSizes[nPageIndex].width;
 				double h = oInfo.arSizes[nPageIndex].height;
+
+				if (11 == nSaveType) {
+					m_internal->Dpi300();
+					oFrame.SetImageDpi(m_internal->m_dDpiX);
+				}
 
 				nRasterW = (int)((w * m_internal->m_dDpiX / 25.4) + 0.5);
 				nRasterH = (int)((h * m_internal->m_dDpiY / 25.4) + 0.5);
@@ -208,7 +226,7 @@ namespace NSOnlineOfficeBinToPdf
 			oRenderer.SetImageCache(pImagesCache);
 
 			oRenderer.CreateFromBgraFrame(&oFrame);
-			oRenderer.SetTileImageDpi(96.0);
+			oRenderer.SetTileImageDpi(m_internal->m_dDpiX);
 			oRenderer.SetSwapRGB(false);
 
 			this->m_pRenderer = &oRenderer;
@@ -250,6 +268,10 @@ namespace NSOnlineOfficeBinToPdf
 				oFrame.SaveFile(sMain + sExt, m_internal->m_nRasterFormat);
 			else
 				oFrame.SaveFile(sMain + std::to_wstring(nPageIndex + 1) + sExt, m_internal->m_nRasterFormat);
+
+			if (11 == nSaveType) { // chongxishen
+				m_internal->ResetDpi();
+			}
 		}
 
 		RELEASEINTERFACE(pFontManager);

@@ -550,6 +550,9 @@ bool CBgraFrame::SaveFile(const std::wstring& strFileName, unsigned int nFileTyp
 			return false;
 		
 		CxImage img;
+		// chongxishen
+		img.SetXDPI(m_dDpiXY);
+		img.SetYDPI(m_dDpiXY);
 
 		if (!img.CreateFromArray(m_pData, m_lWidth, m_lHeight, lBitsPerPixel * 8, lStride, (m_lStride >= 0) ? true : false, !m_bIsRGBA))
 			return false;

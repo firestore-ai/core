@@ -57,6 +57,8 @@ private:
 
 	bool m_bIsRGBA;
 
+	double m_dDpiXY = 96.0; // chongxishen
+
 public:
 	CBgraFrame();
 	~CBgraFrame();
@@ -101,6 +103,11 @@ public:
 	void FromImage(IGrObject* pGraphics, bool bIsCopy = true);
 
 	static bool RemoveOrientation(const std::wstring& sFile);
+
+	// chongxishen
+	void SetImageDpi(const double& value) {
+		m_dDpiXY = value;
+	}
 };
 
 #endif
