@@ -161,9 +161,9 @@ namespace MetaFile
 		return m_pDC->GetMapMode();
 	}
 
-	double CWmfParserBase::GetDpi()
+	USHORT CWmfParserBase::GetDpi()
 	{
-		return (0 != m_oPlaceable.ushInch) ? m_oPlaceable.ushInch : 96.;
+		return (0 != m_oPlaceable.ushInch) ? m_oPlaceable.ushInch : 96;
 	}
 
 	IRegion *CWmfParserBase::GetRegion()
@@ -217,7 +217,6 @@ namespace MetaFile
 	void CWmfParserBase::SetInterpretator(IOutputDevice *pOutput, const wchar_t *wsFilePath)
 	{
 		RELEASEOBJECT(m_pInterpretator);
-
 	}
 
 	TRectD CWmfParserBase::GetBounds()
@@ -249,6 +248,19 @@ namespace MetaFile
 			TRectL oBB;
 
 			oBB = m_oPlaceable.oBoundingBox;
+
+			const USHORT ushFileDpi = GetDpi();
+			const USHORT ushRendererDpi = 96;
+
+			if (ushFileDpi != ushRendererDpi && 0 != ushFileDpi)
+			{
+				const double dKoef = (double)ushRendererDpi / (double)ushFileDpi;
+
+				oBB.Left   = std::round(oBB.Left   * dKoef);
+				oBB.Top    = std::round(oBB.Top    * dKoef);
+				oBB.Right  = std::round(oBB.Right  * dKoef);
+				oBB.Bottom = std::round(oBB.Bottom * dKoef);
+			}
 
 			// Иногда m_oPlaceable.BoundingBox задается нулевой ширины и высоты
 			if (abs(oBB.Right - oBB.Left) <= 1)
@@ -747,14 +759,14 @@ namespace MetaFile
 
 					if (NULL != pNewBuffer)
 					{
-						m_pInterpretator->DrawBitmap(dX, dY, fabs(dX1 - dX), fabs(dY1 - dY), pNewBuffer, std::abs(oClip.Right - oClip.Left), std::abs(oClip.Bottom - oClip.Top));
+						m_pInterpretator->DrawBitmap(dX, dY, dX1 - dX, dY1 - dY, pNewBuffer, std::abs(oClip.Right - oClip.Left), std::abs(oClip.Bottom - oClip.Top));
 						delete[] pNewBuffer;
 					}
 					else
-						m_pInterpretator->DrawBitmap(dX, dY, fabs(dX1 - dX), fabs(dY1 - dY), pBgra, unWidth, unHeight);
+						m_pInterpretator->DrawBitmap(dX, dY, dX1 - dX, dY1 - dY, pBgra, unWidth, unHeight);
 				}
 				else
-					m_pInterpretator->DrawBitmap(dX, dY, fabs(dX1 - dX), fabs(dY1 - dY), pBgra, unWidth, unHeight);
+					m_pInterpretator->DrawBitmap(dX, dY, dX1 - dX, dY1 - dY, pBgra, unWidth, unHeight);
 			}
 
 			if (pBgra)
@@ -849,7 +861,7 @@ namespace MetaFile
 			m_pDC->SetViewportOrg(m_oRect.Left, m_oRect.Top);
 			m_pDC->SetViewportExt(m_oRect.Right - m_oRect.Left, m_oRect.Bottom - m_oRect.Top);
 
-			if (0 != m_oPlaceable.ushInch)
+			if (IsPlaceable() && 0 != m_oPlaceable.ushInch)
 			{
 				double dScale = 1440. / m_oPlaceable.ushInch;
 				m_pDC->SetWindowScale(dScale, dScale);
@@ -1487,6 +1499,13 @@ namespace MetaFile
 
 		m_pDC->SetWindowOff(shXOffset, shYOffset);
 		UpdateOutputDC();
+
+		if (NULL == m_pInterpretator)
+		{
+			TWmfWindow *pWindow = m_pDC->GetWindow();
+			RegisterPoint(pWindow->x             , pWindow->y             );
+			RegisterPoint(pWindow->x + pWindow->w, pWindow->y + pWindow->h);
+		}
 	}
 
 	void CWmfParserBase::HANDLE_META_RESTOREDC()
@@ -1661,6 +1680,12 @@ namespace MetaFile
 
 		m_pDC->SetWindowExt(shX, shY);
 		UpdateOutputDC();
+
+		if (NULL == m_pInterpretator)
+		{
+			TWmfWindow *pWindow = m_pDC->GetWindow();
+			RegisterPoint(pWindow->x + pWindow->w, pWindow->y + pWindow->h);
+		}
 	}
 
 	void CWmfParserBase::HANDLE_META_SETWINDOWORG(short shX, short shY)
@@ -1670,6 +1695,13 @@ namespace MetaFile
 
 		m_pDC->SetWindowOrg(shX, shY);
 		UpdateOutputDC();
+
+		if (NULL == m_pInterpretator)
+		{
+			TWmfWindow *pWindow = m_pDC->GetWindow();
+			RegisterPoint(pWindow->x             , pWindow->y             );
+			RegisterPoint(pWindow->x + pWindow->w, pWindow->y + pWindow->h);
+		}
 	}
 
 	void CWmfParserBase::HANDLE_META_ESCAPE(unsigned short ushEscapeFunction, unsigned short ushByteCount)
@@ -1730,13 +1762,13 @@ namespace MetaFile
 					m_oEscapeBuffer.Clear();
 					return;
 				}
-				
-				m_oBoundingBox = *oEmfParser.GetBounds();
 
 				if (NULL == m_pInterpretator)
 				{
-					m_oEscapeBuffer.Clear();
-					return HANDLE_META_EOF();
+					if (!IsPlaceable())
+						m_oBoundingBox = *oEmfParser.GetDCBounds();
+
+					HANDLE_META_EOF();
 				}
 				else if (InterpretatorType::Render == m_pInterpretator->GetType())
 				{
@@ -1749,31 +1781,31 @@ namespace MetaFile
 				}
 				else if (InterpretatorType::Svg == m_pInterpretator->GetType())
 				{
-					double dWidth, dHeight;
-
-					((CWmfInterpretatorSvg*)m_pInterpretator)->GetSize(dWidth, dHeight);
-
-					((CEmfParserBase*)&oEmfParser)->SetInterpretator(InterpretatorType::Svg, dWidth, dHeight);
+					((CEmfParserBase*)&oEmfParser)->SetInterpretator(InterpretatorType::Svg);
 
 					XmlUtils::CXmlWriter *pXmlWriter = ((CWmfInterpretatorSvg*)GetInterpretator())->GetXmlWriter();
 
-					TRectD oCurrentRect = GetBounds();
+					TRectL *pEmfRect    = oEmfParser.GetDCBounds();
+					TRectL *pCurentRect = GetDCBounds();
 
-					double dScaleX = std::abs((oCurrentRect.Right - oCurrentRect.Left) / (m_oBoundingBox.Right - m_oBoundingBox.Left));
-					double dScaleY = std::abs((oCurrentRect.Bottom - oCurrentRect.Top) / (m_oBoundingBox.Bottom - m_oBoundingBox.Top));
+					const double dScaleX = std::abs((pCurentRect->Right - pCurentRect->Left) / (pEmfRect->Right  - pEmfRect->Left));
+					const double dScaleY = std::abs((pCurentRect->Bottom - pCurentRect->Top) / (pEmfRect->Bottom - pEmfRect->Top));
 
-					pXmlWriter->WriteNodeBegin(L"g", true);
+					const bool bAddGElement = !Equals(1., dScaleX) || !Equals(1., dScaleY);
 
-					if (0 != dScaleX || 0 != dScaleY)
-						pXmlWriter->WriteAttribute(L"transform", L"scale(" + std::to_wstring(dScaleX) + L',' + std::to_wstring(dScaleY) + L')');
-
-					pXmlWriter->WriteNodeEnd(L"g", true, false);
+					if (bAddGElement)
+					{
+						pXmlWriter->WriteNodeBegin(L"g", true);
+						pXmlWriter->WriteAttribute(L"transform", L"scale(" + ConvertToWString(dScaleX) + L',' + ConvertToWString(dScaleY) + L')');
+						pXmlWriter->WriteNodeEnd(L"g", true, false);
+					}
 
 					((CEmfInterpretatorSvg*)oEmfParser.GetInterpretator())->SetXmlWriter(pXmlWriter);
 
 					oEmfParser.PlayFile();
 
-					pXmlWriter->WriteNodeEnd(L"g", false, false);
+					if (bAddGElement)
+						pXmlWriter->WriteNodeEnd(L"g", false, false);
 
 					HANDLE_META_EOF();
 				}

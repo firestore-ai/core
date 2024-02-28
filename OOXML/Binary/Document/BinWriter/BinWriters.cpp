@@ -3160,13 +3160,7 @@ void BinaryNumberingTableWriter::WriteLevel(const OOX::Numbering::CLvl& lvl)
 		{
 			m_oBcw.m_oStream.WriteBYTE(c_oSerNumTypes::lvl_Suff);
 			m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-			switch(oSuff.m_oVal.get().GetValue())
-			{
-			case SimpleTypes::levelsuffixNothing: m_oBcw.m_oStream.WriteBYTE(numbering_suff_Nothing);break;
-			case SimpleTypes::levelsuffixSpace: m_oBcw.m_oStream.WriteBYTE(numbering_suff_Space);break;
-			case SimpleTypes::levelsuffixTab: m_oBcw.m_oStream.WriteBYTE(numbering_suff_Tab);break;
-			default: m_oBcw.m_oStream.WriteBYTE(numbering_suff_Tab);break;
-			}
+			m_oBcw.m_oStream.WriteBYTE((BYTE)oSuff.m_oVal->GetValue());
 		}
 	}
 	//PStyle
@@ -6462,7 +6456,7 @@ void BinaryDocumentTableWriter::WriteRunContent(std::vector<OOX::WritingElement*
 				OOX::Logic::CSym* oSym = static_cast<OOX::Logic::CSym*>(item);
 				wchar_t ch = 0x0FFF & oSym->m_oChar->GetValue();
 				std::wstring sText(&ch, 1);
-				WriteText(sText, c_oSerRunType::run);
+				WriteText(sText, c_oSerRunType::run);  // todooo определить что писать c_oSerRunType::run или c_oSerRunType::delText - 66333
 				break;
 			}
 		case OOX::et_w_delText:
@@ -8086,6 +8080,12 @@ void BinaryDocumentTableWriter::WriteSdtPrDataBinding(const ComplexTypes::Word::
 		m_oBcw.m_oStream.WriteStringW3(oDataBinding.m_sXPath.get());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
+	if (oDataBinding.m_sStoreItemChecksum.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::StoreItemChecksum);
+		m_oBcw.m_oStream.WriteStringW3(oDataBinding.m_sStoreItemChecksum.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
 }
 void BinaryDocumentTableWriter::WriteSdtPrDate(const OOX::Logic::CDate& oDate)
 {
@@ -8733,7 +8733,7 @@ void BinarySettingsTableWriter::WriteSettingsContent(OOX::CSettings& oSettings, 
 		m_oBcw.m_oStream.WriteBOOL(oSettings.m_oAutoHyphenation->m_oVal.ToBool());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
-	if (oSettings.m_oHyphenationZone.IsInit())
+	if (oSettings.m_oHyphenationZone.IsInit() && oSettings.m_oHyphenationZone->m_oVal.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSer_SettingsType::HyphenationZone);
 		m_oBcw.m_oStream.WriteLONG(oSettings.m_oHyphenationZone->m_oVal->ToTwips());

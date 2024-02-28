@@ -1717,7 +1717,7 @@ int Binary_pPrReader::Read_pgSz(BYTE type, long length, void* poResult)
 	if ( c_oSer_pgSzType::Orientation == type )
 	{
 		pPageSz->m_oOrient.Init();
-		pPageSz->m_oOrient->SetValueFromByte( m_oBufferedStream.GetUChar());
+		pPageSz->m_oOrient->SetValueFromByte( m_oBufferedStream.GetUChar() == 1 ? 0 : 1); 
 	}
 	else if ( c_oSer_pgSzType::W == type )
 	{
@@ -9625,18 +9625,19 @@ int Binary_DocumentTableReader::ReadSdtPrDataBinding(BYTE type, long length, voi
 	ComplexTypes::Word::CDataBinding* pDataBinding = static_cast<ComplexTypes::Word::CDataBinding*>(poResult);
 	if (c_oSerSdt::PrefixMappings == type)
 	{
-		pDataBinding->m_sPrefixMappings.Init();
-		pDataBinding->m_sPrefixMappings->append(m_oBufferedStream.GetString3(length));
+		pDataBinding->m_sPrefixMappings = m_oBufferedStream.GetString3(length);
 	}
 	else if (c_oSerSdt::StoreItemID == type)
 	{
-		pDataBinding->m_sStoreItemID.Init();
-		pDataBinding->m_sStoreItemID->append(m_oBufferedStream.GetString3(length));
+		pDataBinding->m_sStoreItemID = m_oBufferedStream.GetString3(length);
 	}
 	else if (c_oSerSdt::XPath == type)
 	{
-		pDataBinding->m_sXPath.Init();
-		pDataBinding->m_sXPath->append(m_oBufferedStream.GetString3(length));
+		pDataBinding->m_sXPath = m_oBufferedStream.GetString3(length);
+	}
+	else if (c_oSerSdt::StoreItemChecksum == type)
+	{
+		pDataBinding->m_sStoreItemChecksum = m_oBufferedStream.GetString3(length);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;

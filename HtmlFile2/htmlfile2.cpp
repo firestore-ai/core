@@ -25,6 +25,7 @@
 #include "../DesktopEditor/raster/BgraFrame.h"
 #include "../DesktopEditor/graphics/pro/Fonts.h"
 #include "../DesktopEditor/graphics/pro/Graphics.h"
+#include "../DesktopEditor/raster/Metafile/MetaFileCommon.h"
 #include "htmlfile2.h"
 
 #include <boost/regex.hpp>
@@ -99,6 +100,25 @@ std::wstring EncodeXmlString(const std::wstring& s)
 	replace_all(sRes, L"\t", L"&#x9;");
 
 	return sRes;
+}
+
+bool GetStatusUsingExternalLocalFiles()
+{
+	if (NSProcessEnv::IsPresent(NSProcessEnv::Converter::gc_allowPrivateIP))
+		return NSProcessEnv::GetBoolValue(NSProcessEnv::Converter::gc_allowPrivateIP);
+
+	return true;
+}
+
+bool CanUseThisPath(const std::wstring& wsPath, bool bIsAllowExternalLocalFiles)
+{
+	if (bIsAllowExternalLocalFiles)
+		return true;
+
+	if (wsPath.length() >= 3 && L"../" == wsPath.substr(0, 3))
+		return false;
+
+	return true;
 }
 
 class CHtmlFile2_Private
@@ -1769,14 +1789,14 @@ private:
 		std::wstring sImageName = std::to_wstring(m_arrImages.size()) + L'.' + sExtention;
 		if (oImageWriter.CreateFileW(m_sDst + L"/word/media/i" + sImageName))
 		{
-			std::string sSrc = U_TO_UTF8(sSrcM);
-			std::string sBase64 = sSrc.substr(nBase + 7);
-			int nSrcLen = (int)sBase64.length();
+			int nOffset = nBase + 7;
+			int nSrcLen = (int)(sSrcM.length() - nBase + 1);
+
 			int nDecodeLen = NSBase64::Base64DecodeGetRequiredLength(nSrcLen);
 			if (nDecodeLen != 0)
 			{
 				BYTE* pImageData = new BYTE[nDecodeLen];
-				if (TRUE == NSBase64::Base64Decode(sBase64.c_str(), nSrcLen, pImageData, &nDecodeLen))
+				if (TRUE == NSBase64::Base64Decode(sSrcM.c_str() + nOffset, nSrcLen, pImageData, &nDecodeLen))
 				{
 					oImageWriter.WriteFile(pImageData, (DWORD)nDecodeLen);
 					bRes = true;
@@ -1848,14 +1868,22 @@ private:
 			return;
 		}
 
-		bool bIsAllowExternalLocalFiles = true;
-		if (NSProcessEnv::IsPresent(NSProcessEnv::Converter::gc_allowPrivateIP))
-			bIsAllowExternalLocalFiles = NSProcessEnv::GetBoolValue(NSProcessEnv::Converter::gc_allowPrivateIP);
+		const bool bIsAllowExternalLocalFiles = GetStatusUsingExternalLocalFiles();
+
+		bool bIsBase64 = false;
+		if (sSrcM.length() > 4 && sSrcM.substr(0, 4) == L"data" && sSrcM.find(L"/", 4) != std::wstring::npos)
+			bIsBase64 = true;
+
+		if (!bIsBase64)
+			sSrcM = NSSystemPath::ShortenPath(sSrcM);
+
+		if (!CanUseThisPath(sSrcM, bIsAllowExternalLocalFiles))
+			return;
 
 		int nImageId = -1;
 		std::wstring sImageSrc, sExtention;
 		// Предполагаем картинку в Base64
-		if (sSrcM.length() > 4 && sSrcM.substr(0, 4) == L"data" && sSrcM.find(L"/", 4) != std::wstring::npos)
+		if (bIsBase64)
 			bRes = readBase64(sSrcM, sExtention);
 
 		if (!bRes)
@@ -2143,7 +2171,12 @@ private:
 			size_t nHRefLen = sSVG.find(L"\"", nHRef);
 			if(nHRefLen == std::wstring::npos)
 				break;
-			std::wstring sImageName = sSVG.substr(nHRef, nHRefLen - nHRef);
+
+			const std::wstring sImageName = NSSystemPath::ShortenPath(sSVG.substr(nHRef, nHRefLen - nHRef));
+
+			if (!CanUseThisPath(sImageName, GetStatusUsingExternalLocalFiles()))
+				break;
+
 			std::wstring sTIN(sImageName);
 			sTIN.erase(std::remove_if(sTIN.begin(), sTIN.end(), [] (wchar_t ch) { return std::iswspace(ch) || (ch == L'^'); }), sTIN.end());
 			sTIN = NSFile::GetFileName(sTIN);
@@ -2174,7 +2207,7 @@ private:
 		if (bLoad)
 		{
 			std::wstring sPngFile = m_sDst + L"/word/media/i" + sImageId + L".png";
-			pMetafile->ConvertToRaster(sPngFile.data(), 4, 1000);
+			MetaFile::ConvertToRasterMaxSize(pMetafile, sPngFile.data(), 4, 1000);
 		}
 		pMetafile->Release();
 		pFonts->Release();

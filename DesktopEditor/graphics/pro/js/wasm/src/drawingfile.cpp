@@ -1,11 +1,8 @@
 #include <malloc.h>
-#include <iostream>
 
-#include "../../../../pro/Graphics.h"
 #include "../../../../../common/Base64.h"
-#include "../../../../../common/File.h"
+
 #include "drawingfile.h"
-#include "serialize.h"
 
 #ifdef _WIN32
 #define WASM_EXPORT __declspec(dllexport)
@@ -158,6 +155,10 @@ WASM_EXPORT BYTE* GetInteractiveFormsInfo(CGraphicsFileDrawing* pGraphics)
 {
 	return pGraphics->GetInteractiveFormsInfo();
 }
+WASM_EXPORT BYTE* GetInteractiveFormsFonts(CGraphicsFileDrawing* pGraphics, int nType)
+{
+	return pGraphics->GetWidgetFonts(nType);
+}
 WASM_EXPORT BYTE* GetInteractiveFormsAP(CGraphicsFileDrawing* pGraphics, int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nWidget, int nView, int nButtonView)
 {
 	const char* sView = NULL;
@@ -176,7 +177,7 @@ WASM_EXPORT BYTE* GetInteractiveFormsAP(CGraphicsFileDrawing* pGraphics, int nRa
 
 	return pGraphics->GetAPWidget(nRasterW, nRasterH, nBackgroundColor, nPageIndex, nWidget, sView, sButtonView);
 }
-WASM_EXPORT BYTE* GetButtonIcons(CGraphicsFileDrawing* pGraphics, int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int bBase64, int nButtonWidget, int nIconView)
+WASM_EXPORT BYTE* GetButtonIcons(CGraphicsFileDrawing* pGraphics, int nBackgroundColor, int nPageIndex, int bBase64, int nButtonWidget, int nIconView)
 {
 	const char* sIconView = NULL;
 	if (nIconView == 0)
@@ -186,7 +187,7 @@ WASM_EXPORT BYTE* GetButtonIcons(CGraphicsFileDrawing* pGraphics, int nRasterW, 
 	else if (nIconView == 2)
 		sIconView = "IX";
 
-	return pGraphics->GetButtonIcon(nRasterW, nRasterH, nBackgroundColor, nPageIndex, bBase64 ? true : false, nButtonWidget, sIconView);
+	return pGraphics->GetButtonIcon(nBackgroundColor, nPageIndex, bBase64 ? true : false, nButtonWidget, sIconView);
 }
 WASM_EXPORT BYTE* GetAnnotationsInfo(CGraphicsFileDrawing* pGraphics, int nPageIndex)
 {
@@ -203,6 +204,44 @@ WASM_EXPORT BYTE* GetAnnotationsAP(CGraphicsFileDrawing* pGraphics, int nRasterW
 		sView = "R";
 
 	return pGraphics->GetAPAnnots(nRasterW, nRasterH, nBackgroundColor, nPageIndex, nAnnot, sView);
+}
+WASM_EXPORT BYTE* GetFontBinary(CGraphicsFileDrawing* pGraphics, char* path)
+{
+	std::string sPathA(path);
+	std::wstring sFontName = UTF8_TO_U(sPathA);
+	std::wstring sFontFile = pGraphics->GetFont(sFontName);
+	if (sFontFile.empty())
+		return NULL;
+
+	NSWasm::CData oRes;
+	oRes.SkipLen();
+
+	NSFonts::IFontsMemoryStorage* pStorage = NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage();
+	if (pStorage)
+	{
+		NSFonts::IFontStream* pStream = pStorage->Get(sFontFile);
+		if (pStream)
+		{
+			BYTE* pData = NULL;
+			LONG lLength = 0;
+			pStream->GetMemory(pData, lLength);
+
+			if (pData)
+			{
+				oRes.AddInt(lLength);
+
+				unsigned long long npSubMatrix = (unsigned long long)pData;
+				unsigned int npSubMatrix1 = npSubMatrix & 0xFFFFFFFF;
+				oRes.AddInt(npSubMatrix1);
+				oRes.AddInt(npSubMatrix >> 32);
+			}
+		}
+	}
+
+	oRes.WriteLen();
+	BYTE* bRes = oRes.GetBuffer();
+	oRes.ClearWithoutAttack();
+	return bRes;
 }
 WASM_EXPORT void DestroyTextInfo(CGraphicsFileDrawing* pGraphics)
 {
