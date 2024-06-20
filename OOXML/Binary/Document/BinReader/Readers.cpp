@@ -1037,11 +1037,6 @@ int Binary_pPrReader::ReadContent(BYTE type, long length, void* poResult)
 		pPPr->m_oSuppressLineNumbers.Init();
 		pPPr->m_oSuppressLineNumbers->m_oVal.FromBool(m_oBufferedStream.GetBool());
 	}break;
-	case c_oSerProp_pPrType::SnapToGrid:
-	{
-		pPPr->m_oSnapToGrid.Init();
-		pPPr->m_oSnapToGrid->m_oVal.FromBool(m_oBufferedStream.GetBool());
-	}break;
 	case c_oSerProp_pPrType::CnfStyle:
 	{
 		pPPr->m_oCnfStyle.Init();
