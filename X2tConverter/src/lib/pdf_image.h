@@ -88,7 +88,7 @@ namespace NExtractTools
 		imageWriter.SetInternalMediaDirectory(convertParams.m_sInternalMediaDirectory);
 		imageWriter.SetTempDirectory(convertParams.m_sTempDir);
 		imageWriter.SetApplication(pApplicationFonts);
-		imageWriter.SetDpi(300.0, 300.0);
+		imageWriter.SetOutputDpi(300.0, 300.0);
 
 		if (NULL != params.m_oThumbnail)
 		{
