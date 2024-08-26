@@ -2282,7 +2282,7 @@ void Binary_tblPrWriter::Write_tblpPr(const ComplexTypes::Word::CTblPPr& pr)
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
 }
-void Binary_tblPrWriter::WriteRowPr(const OOX::Logic::©Properties& rowPr)
+void Binary_tblPrWriter::WriteRowPr(const OOX::Logic::Properties& rowPr)
 {
 	int nCurPos = 0;
 	//CantSplit
