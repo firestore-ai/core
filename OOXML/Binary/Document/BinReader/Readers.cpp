@@ -5092,7 +5092,8 @@ int Binary_DocumentTableReader::ReadParagraph(BYTE type, long length, void* poRe
 
 			if (m_oCur_pPr.m_oDivID.IsInit())
 			{
-				m_oFileWriter.get_web_settings_writer().AddDiv(m_oCur_pPr.m_oDivID->ToString());
+				LONG divId = *m_oCur_pPr.m_oDivID->m_oVal;
+				m_oFileWriter.get_web_settings_writer().AddDiv(std::to_wstring(divId));
 			}
 		}
 	}
