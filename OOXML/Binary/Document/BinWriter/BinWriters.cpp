@@ -2282,7 +2282,7 @@ void Binary_tblPrWriter::Write_tblpPr(const ComplexTypes::Word::CTblPPr& pr)
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
 }
-void Binary_tblPrWriter::WriteRowPr(const OOX::Logic::CTableRowProperties& rowPr)
+void Binary_tblPrWriter::WriteRowPr(const OOX::Logic::©Properties& rowPr)
 {
 	int nCurPos = 0;
 	//CantSplit
@@ -2297,7 +2297,7 @@ void Binary_tblPrWriter::WriteRowPr(const OOX::Logic::CTableRowProperties& rowPr
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerProp_rowPrType::DivId);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
-		m_oBcw.m_oStream.WriteLONG(*rowPr.m_oOutlineLvl->m_oVal);
+		m_oBcw.m_oStream.WriteLONG(*rowPr.m_oDivId->m_oVal);
 	}
 	//After
 	if (rowPr.m_oGridAfter.IsInit() || rowPr.m_oWAfter.IsInit())
