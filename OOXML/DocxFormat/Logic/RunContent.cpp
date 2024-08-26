@@ -478,28 +478,7 @@ namespace OOX
 				oReader.MoveToElement();
 			}
 
-		//--------------------------------------------------------------------------------
-		// CRuby 17.3.3.25 (Part 1)
-		//--------------------------------------------------------------------------------
-
-		CRuby::CRuby(OOX::Document *pMain) : WritingElement(pMain) {}
-		CRuby::~CRuby() {}
-		void CRuby::fromXML(XmlUtils::CXmlNode& oNode)
-		{
-		}
-		void CRuby::fromXML(XmlUtils::CXmlLiteReader& oReader)
-		{
-			if ( !oReader.IsEmptyNode() )
-				oReader.ReadTillEnd( oReader.GetDepth() );
-		}
-		std::wstring CRuby::toXML() const
-		{
-			return _T("<w:ruby />");
-		}
-		EElementType CRuby::getType() const
-		{
-			return et_w_ruby;
-		}
+		
 
 		//--------------------------------------------------------------------------------
 		// CSoftHyphen 17.3.3.29 (Part 1)

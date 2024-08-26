@@ -33,7 +33,7 @@ namespace OOX
             void fromXml(XmlUtils::CXmlLiteReader& oReader, CRuby* pRuby);
             virtual std::wstring toXML() const;
             virtual void toXmlWriter(XmlUtils::CXmlLiteWriter& oWriter) const;
-            virtual EElementType getType() { return EElementType::RubyProperty; }
+            virtual EElementType getType() const;
 
             template <typename Type>
             static nullable<Type> Merge(const nullable<Type>& oPrev, const nullable<Type>& oCurrent)

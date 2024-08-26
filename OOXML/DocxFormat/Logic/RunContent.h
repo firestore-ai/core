@@ -301,27 +301,6 @@ namespace OOX
 		};
 		
 
-		//--------------------------------------------------------------------------------
-		// CRuby 17.3.3.25 (Part 1)
-		//--------------------------------------------------------------------------------	
-		class CRuby : public WritingElement
-		{
-		public:
-			WritingElement_AdditionMethods(CRuby)
-			CRuby(OOX::Document *pMain = NULL);
-			virtual ~CRuby();
-
-		public:
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode);
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
-
-			nullable<SimpleType::Run> m_oRubyBase;
-			nullable<SimpleType::Run> m_oRubyText;
-			nullable<SimpleType::RubyPr> m_oRubyPr;
-
-			virtual std::wstring      toXML() const;
-			virtual EElementType getType() const;
-		};
 
 		//--------------------------------------------------------------------------------
 		// CSoftHyphen 17.3.3.29 (Part 1)
