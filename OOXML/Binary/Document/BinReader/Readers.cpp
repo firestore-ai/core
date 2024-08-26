@@ -1032,6 +1032,11 @@ int Binary_pPrReader::ReadContent(BYTE type, long length, void* poResult)
 		pPPr->m_oOutlineLvl.Init();
 		pPPr->m_oOutlineLvl->m_oVal = m_oBufferedStream.GetLong();
 	}break;
+	case c_oSerProp_pPrType::DivId:
+	{
+		pPPr->m_oDivID.Init();
+		pPPr->m_oDivID->m_oVal = m_oBufferedStream.GetLong();
+	}break;
 	case c_oSerProp_pPrType::SuppressLineNumbers:
 	{
 		pPPr->m_oSuppressLineNumbers.Init();
@@ -2130,7 +2135,11 @@ int Binary_pPrReader::ReadPageBorder(BYTE type, long length, void* poResult)
 }
 
 
-Binary_tblPrReader::Binary_tblPrReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter):Binary_CommonReader(poBufferedStream),oBinary_CommonReader2(poBufferedStream),oBinary_pPrReader(poBufferedStream, oFileWriter)
+Binary_tblPrReader::Binary_tblPrReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter)
+:Binary_CommonReader(poBufferedStream)
+,oBinary_CommonReader2(poBufferedStream)
+,oBinary_pPrReader(poBufferedStream, oFileWriter)
+,m_oWebSettingsWriter(oFileWriter.get_web_settings_writer())
 {
 }
 int Binary_tblPrReader::Read_tblPr(BYTE type, long length, void* poResult)
@@ -2503,6 +2512,15 @@ int Binary_tblPrReader::Read_RowPr(BYTE type, long length, void* poResult)
             pCStringWriter->WriteString(std::wstring(_T("<w:cantSplit />")));
 		else
             pCStringWriter->WriteString(std::wstring(_T("<w:cantSplit w:val=\"false\"/>")));
+	}
+	else if ( c_oSerProp_rowPrType::DivId == type)
+	{
+		long divId = m_oBufferedStream.GetLong();
+		if (divId > 0)
+		{
+			pCStringWriter->WriteString(L"<w:divId w:val=\"" + std::to_wstring(divId) + L"\"/>");				
+			m_oWebSettingsWriter.AddDiv(std::to_wstring(divId));
+		}
 	}
 	else if ( c_oSerProp_rowPrType::After == type )
 	{
@@ -5071,6 +5089,11 @@ int Binary_DocumentTableReader::ReadParagraph(BYTE type, long length, void* poRe
 		{
 			std::wstring sParaPr = m_oCur_pPr.toXML();
 			m_oDocumentWriter.m_oContent.WriteString(sParaPr);
+
+			if (m_oCur_pPr.m_oDivID.IsInit())
+			{
+				m_oFileWriter.get_web_settings_writer.AddDiv(m_oCur_pPr.m_oDivID->ToString());
+			}
 		}
 	}
 	else if ( c_oSerParType::Content == type )

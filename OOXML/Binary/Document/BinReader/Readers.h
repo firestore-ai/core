@@ -148,6 +148,8 @@ class Binary_tblPrReader : public Binary_CommonReader
 protected:
 	Binary_pPrReader oBinary_pPrReader;
 	Binary_CommonReader2 oBinary_CommonReader2;
+
+	Writers::WebSettingsWriter& m_oWebSettingsWriter;
 public:
 	std::vector<double> m_aCurTblGrid;
 public:

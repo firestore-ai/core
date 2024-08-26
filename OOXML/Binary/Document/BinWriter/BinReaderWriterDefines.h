@@ -358,7 +358,8 @@ extern int g_nCurFormatVersion;
 		SuppressLineNumbers = 44,
 		CnfStyle = 45,
 		SnapToGrid = 46,
-		Bidi = 47
+		Bidi = 47,
+		DivId = 48,
 	};}
 	namespace c_oSerProp_rPrType{enum c_oSerProp_rPrType
 	{
@@ -442,7 +443,8 @@ extern int g_nCurFormatVersion;
 		trPrChange = 17,
 		TableCellSpacingTwips = 18,
 		Height_ValueTwips = 19,
-		CnfStyle = 20
+		CnfStyle = 20,
+		DivId = 21
 	};}
 	namespace c_oSerProp_cellPrType{enum c_oSerProp_cellPrType
 	{

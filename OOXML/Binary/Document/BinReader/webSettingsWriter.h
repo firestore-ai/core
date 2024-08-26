@@ -33,17 +33,21 @@
 #define WEB_SETTINGS_WRITER
 
 #include "../../Sheets/Common/Common.h"
+#include <set>
 
 namespace Writers
 {
 	class WebSettingsWriter
 	{
         std::wstring	m_sDir;
+		std::set<std::wstring> m_sDivs;
 
 	public:
 		WebSettingsWriter(std::wstring sDir);
 
 		void Write(bool bGlossary = false);
-	};
+
+		void AddDiv(std::wstring sDiv);
+	};	
 }
 #endif	// #ifndef WEB_SETTINGS_WRITER
