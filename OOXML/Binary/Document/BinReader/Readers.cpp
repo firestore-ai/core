@@ -4848,7 +4848,7 @@ int Binary_DocumentTableReader::ReadDocumentContent(BYTE type, long length, void
 		// try read paraId and textId		
 		_INT32 nParaId = 0;
 		_INT32 nTextId = 0;
-		bool hasParaId = this->TryReadParaId(c_oSeParType::ParaId, nParaId, nTextId);
+		bool hasParaId = this->TryReadParaId(c_oSerParType::ParaId, nParaId, nTextId);
 
 		if (!hasParaId && m_bUsedParaIdCounter && m_oFileWriter.m_pComments)
 		{
