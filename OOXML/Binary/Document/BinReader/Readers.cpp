@@ -4814,31 +4814,23 @@ int Binary_DocumentTableReader::ReadDocumentContentOut(long length)
 	return res;
 }
 
-bool Binary_DocumentTableReader::TryReadParaId(_INT32& nParaId, _INT32& nTextId)
+bool Binary_DocumentTableReader::TryReadParaId(BYTE defType, _INT32& nParaId, _INT32& nTextId)
 {
 	bool hasParaId = false;
 	BYTE read1defType = 0;
 	LONG pos = m_oBufferedStream.GetPos();
-	if (false == m_oBufferedStream.GetUCharWithResult(&read1defType))
+	if (m_oBufferedStream.GetUCharWithResult(&read1defType))
 	{
-		goto RECOVER;
-	}	
-	
-	if (read1defType == c_oSerParType::ParaId)
-	{		
-		LONG nSize = m_oBufferedStream.GetLong();
-		if (nSize == 8)
-		{
-			hasParaId = true;
-			nParaId = m_oBufferedStream.GetLong();
-			nTextId = m_oBufferedStream.GetLong();
-			return true;
-		}
-		else
-		{
-			m_oBufferedStream.Skip(nSize);
-			return false;
-		}
+		if (read1defType == defType) 
+		{		
+			LONG nSize = m_oBufferedStream.GetLong();
+			if (nSize == sizeof(LONG)*2)
+			{
+				hasParaId = true;
+				nParaId = m_oBufferedStream.GetLong();
+				nTextId = m_oBufferedStream.GetLong();			
+			}
+		}		
 	}	
 RECOVER:	
 	m_oBufferedStream.Seek(pos);	
@@ -4856,7 +4848,7 @@ int Binary_DocumentTableReader::ReadDocumentContent(BYTE type, long length, void
 		// try read paraId and textId		
 		_INT32 nParaId = 0;
 		_INT32 nTextId = 0;
-		bool hasParaId = this->TryReadParaId(nParaId, nTextId);
+		bool hasParaId = this->TryReadParaId(c_oSeParType::ParaId, nParaId, nTextId);
 
 		if (!hasParaId && m_bUsedParaIdCounter && m_oFileWriter.m_pComments)
 		{
@@ -8560,7 +8552,7 @@ int Binary_DocumentTableReader::Read_TableContent(BYTE type, long length, void* 
 	{
 		_INT32 nParaId = 0;
 		_INT32 nTextId = 0;
-		bool hasParaId = this->TryReadParaId(nParaId, nTextId);
+		bool hasParaId = this->TryReadParaId(c_oSerDocTableType::Row_ParaId, nParaId, nTextId);
 		if (hasParaId)
 		{
 			pCStringWriter->WriteString(std::wstring(_T("<w:tr w14:paraId=\"")));
