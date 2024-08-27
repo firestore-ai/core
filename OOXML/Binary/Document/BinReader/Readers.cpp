@@ -4860,6 +4860,7 @@ int Binary_DocumentTableReader::ReadDocumentContent(BYTE type, long length, void
 
 		if (!hasParaId && m_bUsedParaIdCounter && m_oFileWriter.m_pComments)
 		{
+			hasParaId = true;
 			nParaId = m_oFileWriter.m_pComments->m_oParaIdCounter.getNextId();
 			nTextId = nParaId;
 		}
