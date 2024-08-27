@@ -4832,7 +4832,7 @@ bool Binary_DocumentTableReader::TryReadParaId(BYTE defType, _INT32& nParaId, _I
 			}
 		}		
 	}	
-RECOVER:	
+
 	m_oBufferedStream.Seek(pos);	
 	return hasParaId;
 }
