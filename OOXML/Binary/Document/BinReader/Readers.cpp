@@ -4813,6 +4813,33 @@ int Binary_DocumentTableReader::ReadDocumentContentOut(long length)
 	READ1_DEF(length, res, this->ReadDocumentContent, NULL);
 	return res;
 }
+
+bool Binary_DocumentTableReader::TryReadParaId(_INT32& nParaId, _INT32& nTextId)
+{
+	bool hasParaId = false;
+	LONG pos = m_oBufferedStream.GetPosition();
+	if (m_oBufferedStream.GetByte() == c_oSerParType::ParaId)
+	{		
+		LONG nSize = m_oBufferedStream.GetLong();
+		if (nSize == 8)
+		{
+			hasParaId = true;
+			nParaId = m_oBufferedStream.GetLong();
+			nTextId = m_oBufferedStream.GetLong();
+		}
+		else
+		{
+			m_oBufferedStream.Skip(nSize);
+			return false;
+		}
+	}
+	else
+	{
+		m_oBufferedStream.Seek(pos);
+	}
+	return hasParaId;
+}
+
 int Binary_DocumentTableReader::ReadDocumentContent(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
@@ -4821,12 +4848,22 @@ int Binary_DocumentTableReader::ReadDocumentContent(BYTE type, long length, void
 		m_byteLastElemType = c_oSerParType::Par;
 		m_oCur_pPr.Clear();
 
-		if (m_bUsedParaIdCounter && m_oFileWriter.m_pComments)
-		{
-			_INT32 nId = m_oFileWriter.m_pComments->m_oParaIdCounter.getNextId();
-			std::wstring sParaId = XmlUtils::ToString(nId, L"%08X");
+		// try read paraId and textId		
+		_INT32 nParaId = 0;
+		_INT32 nTextId = 0;
+		bool hasParaId = this->TryReadParaId(&nParaId, &nTextId);
 
-			m_oDocumentWriter.m_oContent.WriteString(L"<w:p w14:paraId=\"" + sParaId + L"\" w14:textId=\"" + sParaId + L"\">");
+		if (!hasParaId && m_bUsedParaIdCounter && m_oFileWriter.m_pComments)
+		{
+			nParaId = m_oFileWriter.m_pComments->m_oParaIdCounter.getNextId();
+			nTextId = nParaId;
+		}
+
+		if (hasParaId)				
+		{
+			std::wstring sParaId = XmlUtils::ToString(nParaId, L"%08X");
+			std::wstring sTextId = XmlUtils::ToString(nTextId, L"%08X");
+			m_oDocumentWriter.m_oContent.WriteString(L"<w:p w14:paraId=\"" + sParaId + L"\" w14:textId=\"" + sTextId + L"\">");
 		}
 		else
 		{
@@ -8515,7 +8552,22 @@ int Binary_DocumentTableReader::Read_TableContent(BYTE type, long length, void* 
 	NSStringUtils::CStringBuilder* pCStringWriter = static_cast<NSStringUtils::CStringBuilder*>(poResult);
 	if ( c_oSerDocTableType::Row == type )
 	{
-        pCStringWriter->WriteString(std::wstring(_T("<w:tr>")));
+		_INT32 nParaId = 0;
+		_INT32 nTextId = 0;
+		bool hasParaId = this->TryReadParaId(nParaId, nTextId);
+		if (hasParaId)
+		{
+			pCStringWriter->WriteString(std::wstring(_T("<w:tr w14:paraId=\"")));
+			pCStringWriter->WriteString(XmlUtils::ToString(nParaId, L"%08X"));
+			pCStringWriter->WriteString(std::wstring(_T("\" w14:textId=\"")));
+			pCStringWriter->WriteString(XmlUtils::ToString(nTextId, L"%08X"));
+			pCStringWriter->WriteString(std::wstring(_T("\">")));
+		}
+		else 
+        {
+			pCStringWriter->WriteString(std::wstring(_T("<w:tr>")));
+		}	
+		
 		READ1_DEF(length, res, this->Read_Row, poResult);
         pCStringWriter->WriteString(std::wstring(_T("</w:tr>")));
 	}

@@ -97,6 +97,8 @@ namespace OOX
 			m_oRsidR.reset();
 			m_oRsidRDefault.reset();
 			m_oRsidRPr.reset();
+			m_oParaId.reset();
+			m_oTextId.reset();
 
 			m_oParagraphProperty = NULL;
 

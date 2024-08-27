@@ -543,7 +543,9 @@ extern int g_nCurFormatVersion;
 		DocParts = 27,
 		PermStart = 28,
 		PermEnd = 29,
-		JsaProjectExternal = 30
+		JsaProjectExternal = 30,
+		ParaId = 31,
+		TextId = 32
 	};}
 	namespace c_oSerGlossary {
 		enum c_oSerGlossary
@@ -582,7 +584,8 @@ extern int g_nCurFormatVersion;
 		MoveFromRangeStart = 14,
 		MoveFromRangeEnd = 15,
 		MoveToRangeStart = 16,
-		MoveToRangeEnd = 17
+		MoveToRangeEnd = 17,
+		Row_ParaId = 18,
 	};}
 	namespace c_oSerRunType{enum c_oSerRunType
 	{
