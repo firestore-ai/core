@@ -37,14 +37,30 @@ namespace Writers
 	WebSettingsWriter::WebSettingsWriter(std::wstring sDir) : m_sDir(sDir)
 	{
 	}
+
+	void WebSettingsWriter::AddDiv(std::wstring sDiv)
+	{
+		m_sDivs.insert(sDiv);
+	}
+
 	void WebSettingsWriter::Write(bool bGlossary)
 	{
 		std::wstring s_Common;
 
 		s_Common = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?> \
 <w:webSettings xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\"> \
-<w:optimizeForBrowser/> \
-</w:webSettings>");
+<w:optimizeForBrowser/> ");
+		if (m_sDivs.size() > 0)
+		{
+			s_Common += _T("<w:divs>");
+			for (std::set<std::wstring>::iterator it = m_sDivs.begin(); it != m_sDivs.end(); ++it)
+			{
+				s_Common += _T("<w:div w:id=\"") + *it + _T("\"/>");
+			}
+			s_Common += _T("</w:divs>");
+		}		
+
+		s_Common += _T("</w:webSettings>");
 
 		OOX::CPath fileName = m_sDir + FILE_SEPARATOR_STR +_T("word") + (bGlossary ? (FILE_SEPARATOR_STR + std::wstring(L"glossary")) : L"") + FILE_SEPARATOR_STR + _T("webSettings.xml");
 

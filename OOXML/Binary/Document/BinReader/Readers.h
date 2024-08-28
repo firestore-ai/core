@@ -148,6 +148,8 @@ class Binary_tblPrReader : public Binary_CommonReader
 protected:
 	Binary_pPrReader oBinary_pPrReader;
 	Binary_CommonReader2 oBinary_CommonReader2;
+
+	Writers::WebSettingsWriter& m_oWebSettingsWriter;
 public:
 	std::vector<double> m_aCurTblGrid;
 public:
@@ -489,6 +491,8 @@ public:
 	int ReadSdtTextFormPrFormat(BYTE type, long length, void* poResult);
 	int ReadSdtPicture(BYTE type, long length, void* poResult);
 	int ReadSdtComplexFormPr(BYTE type, long length, void* poResult);
+
+	bool TryReadParaId(BYTE type, _INT32& nParaId, _INT32& nTextId);
 };
 class Binary_NotesTableReader : public Binary_CommonReader
 {

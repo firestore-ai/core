@@ -570,6 +570,8 @@ namespace OOX
 			m_oRsidR.reset();
 			m_oRsidRPr.reset();
 			m_oRsidTr.reset();
+			m_oParaId.reset();
+			m_oTextId.reset();
 
 			WritingElementWithChilds::ClearItems();
 
@@ -580,6 +582,8 @@ namespace OOX
             XmlMacroReadAttributeBase( oNode, _T("w:rsidR"),   m_oRsidR );
             XmlMacroReadAttributeBase( oNode, _T("w:rsidRPr"), m_oRsidRPr );
             XmlMacroReadAttributeBase( oNode, _T("w:rsidTr"),  m_oRsidTr );
+			XmlMacroReadAttributeBase( oNode, _T("w14:paraId"),  m_oRsidTr );
+			XmlMacroReadAttributeBase( oNode, _T("w14:textId"),  m_oRsidTr );
 
 			std::vector<XmlUtils::CXmlNode> oChilds;
 			int nNumCol = 0;
@@ -821,6 +825,8 @@ namespace OOX
 			ComplexTypes_WriteAttribute( _T("w:rsidR=\""),   m_oRsidR );
 			ComplexTypes_WriteAttribute( _T("w:rsidRPr=\""), m_oRsidRPr );
 			ComplexTypes_WriteAttribute( _T("w:rsidTr=\""),  m_oRsidTr );
+			ComplexTypes_WriteAttribute( _T("w14:paraId=\""),  m_oParaId );
+			ComplexTypes_WriteAttribute( _T("w14:textId=\""),  m_oTextId );
 
 			sResult += _T(">");
 
@@ -847,6 +853,8 @@ namespace OOX
 			WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:rsidR"),   m_oRsidR )
 			WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:rsidRPr"), m_oRsidRPr )
 			WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:rsidTr"),  m_oRsidTr )
+			WritingElement_ReadAttributes_Read_else_if( oReader, _T("w14:paraId"),  m_oParaId )
+			WritingElement_ReadAttributes_Read_else_if( oReader, _T("w14:textId"),  m_oTextId )
 			WritingElement_ReadAttributes_End( oReader )
 		}
 

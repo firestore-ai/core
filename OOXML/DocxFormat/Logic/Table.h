@@ -415,6 +415,8 @@ namespace OOX
 			nullable<SimpleTypes::CLongHexNumber> m_oRsidR;
 			nullable<SimpleTypes::CLongHexNumber> m_oRsidRPr;
 			nullable<SimpleTypes::CLongHexNumber> m_oRsidTr;
+			nullable<SimpleTypes::CLongHexNumber> m_oParaId;
+			nullable<SimpleTypes::CLongHexNumber> m_oTextId;
 
 			// Childs
 			OOX::Logic::CTableRowProperties*	m_pTableRowProperties; //todooo - выкинуть из m_arrItems, переделать на nullable<>

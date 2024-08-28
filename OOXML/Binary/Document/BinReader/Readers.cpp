@@ -1032,6 +1032,11 @@ int Binary_pPrReader::ReadContent(BYTE type, long length, void* poResult)
 		pPPr->m_oOutlineLvl.Init();
 		pPPr->m_oOutlineLvl->m_oVal = m_oBufferedStream.GetLong();
 	}break;
+	case c_oSerProp_pPrType::DivId:
+	{
+		pPPr->m_oDivID.Init();
+		pPPr->m_oDivID->m_oVal = m_oBufferedStream.GetLong();
+	}break;
 	case c_oSerProp_pPrType::SuppressLineNumbers:
 	{
 		pPPr->m_oSuppressLineNumbers.Init();
@@ -2130,7 +2135,11 @@ int Binary_pPrReader::ReadPageBorder(BYTE type, long length, void* poResult)
 }
 
 
-Binary_tblPrReader::Binary_tblPrReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter):Binary_CommonReader(poBufferedStream),oBinary_CommonReader2(poBufferedStream),oBinary_pPrReader(poBufferedStream, oFileWriter)
+Binary_tblPrReader::Binary_tblPrReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter)
+:Binary_CommonReader(poBufferedStream)
+,oBinary_CommonReader2(poBufferedStream)
+,oBinary_pPrReader(poBufferedStream, oFileWriter)
+,m_oWebSettingsWriter(oFileWriter.get_web_settings_writer())
 {
 }
 int Binary_tblPrReader::Read_tblPr(BYTE type, long length, void* poResult)
@@ -2503,6 +2512,15 @@ int Binary_tblPrReader::Read_RowPr(BYTE type, long length, void* poResult)
             pCStringWriter->WriteString(std::wstring(_T("<w:cantSplit />")));
 		else
             pCStringWriter->WriteString(std::wstring(_T("<w:cantSplit w:val=\"false\"/>")));
+	}
+	else if ( c_oSerProp_rowPrType::DivId == type)
+	{
+		long divId = m_oBufferedStream.GetLong();
+		if (divId > 0)
+		{
+			pCStringWriter->WriteString(L"<w:divId w:val=\"" + std::to_wstring(divId) + L"\"/>");				
+			m_oWebSettingsWriter.AddDiv(std::to_wstring(divId));
+		}
 	}
 	else if ( c_oSerProp_rowPrType::After == type )
 	{
@@ -4795,6 +4813,30 @@ int Binary_DocumentTableReader::ReadDocumentContentOut(long length)
 	READ1_DEF(length, res, this->ReadDocumentContent, NULL);
 	return res;
 }
+
+bool Binary_DocumentTableReader::TryReadParaId(BYTE defType, _INT32& nParaId, _INT32& nTextId)
+{
+	bool hasParaId = false;
+	BYTE read1defType = 0;
+	LONG pos = m_oBufferedStream.GetPos();
+	if (m_oBufferedStream.GetUCharWithResult(&read1defType))
+	{
+		if (read1defType == defType) 
+		{		
+			LONG nSize = m_oBufferedStream.GetLong();
+			if (nSize == sizeof(_INT32)*2)
+			{
+				hasParaId = true;
+				nParaId = m_oBufferedStream.GetLong();
+				nTextId = m_oBufferedStream.GetLong();			
+			}
+		}		
+	}	
+
+	m_oBufferedStream.Seek(pos);	
+	return hasParaId;
+}
+
 int Binary_DocumentTableReader::ReadDocumentContent(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
@@ -4803,12 +4845,23 @@ int Binary_DocumentTableReader::ReadDocumentContent(BYTE type, long length, void
 		m_byteLastElemType = c_oSerParType::Par;
 		m_oCur_pPr.Clear();
 
-		if (m_bUsedParaIdCounter && m_oFileWriter.m_pComments)
-		{
-			_INT32 nId = m_oFileWriter.m_pComments->m_oParaIdCounter.getNextId();
-			std::wstring sParaId = XmlUtils::ToString(nId, L"%08X");
+		// try read paraId and textId		
+		_INT32 nParaId = 0;
+		_INT32 nTextId = 0;
+		bool hasParaId = this->TryReadParaId(c_oSerParType::ParaId, nParaId, nTextId);
 
-			m_oDocumentWriter.m_oContent.WriteString(L"<w:p w14:paraId=\"" + sParaId + L"\" w14:textId=\"" + sParaId + L"\">");
+		if (!hasParaId && m_bUsedParaIdCounter && m_oFileWriter.m_pComments)
+		{
+			hasParaId = true;
+			nParaId = m_oFileWriter.m_pComments->m_oParaIdCounter.getNextId();
+			nTextId = nParaId;
+		}
+
+		if (hasParaId)				
+		{
+			std::wstring sParaId = XmlUtils::ToString(nParaId, L"%08X");
+			std::wstring sTextId = XmlUtils::ToString(nTextId, L"%08X");
+			m_oDocumentWriter.m_oContent.WriteString(L"<w:p w14:paraId=\"" + sParaId + L"\" w14:textId=\"" + sTextId + L"\">");
 		}
 		else
 		{
@@ -5071,6 +5124,12 @@ int Binary_DocumentTableReader::ReadParagraph(BYTE type, long length, void* poRe
 		{
 			std::wstring sParaPr = m_oCur_pPr.toXML();
 			m_oDocumentWriter.m_oContent.WriteString(sParaPr);
+
+			if (m_oCur_pPr.m_oDivID.IsInit())
+			{
+				LONG divId = *m_oCur_pPr.m_oDivID->m_oVal;
+				m_oFileWriter.get_web_settings_writer().AddDiv(std::to_wstring(divId));
+			}
 		}
 	}
 	else if ( c_oSerParType::Content == type )
@@ -8491,7 +8550,22 @@ int Binary_DocumentTableReader::Read_TableContent(BYTE type, long length, void* 
 	NSStringUtils::CStringBuilder* pCStringWriter = static_cast<NSStringUtils::CStringBuilder*>(poResult);
 	if ( c_oSerDocTableType::Row == type )
 	{
-        pCStringWriter->WriteString(std::wstring(_T("<w:tr>")));
+		_INT32 nParaId = 0;
+		_INT32 nTextId = 0;
+		bool hasParaId = this->TryReadParaId(c_oSerDocTableType::Row_ParaId, nParaId, nTextId);
+		if (hasParaId)
+		{
+			pCStringWriter->WriteString(std::wstring(_T("<w:tr w14:paraId=\"")));
+			pCStringWriter->WriteString(XmlUtils::ToString(nParaId, L"%08X"));
+			pCStringWriter->WriteString(std::wstring(_T("\" w14:textId=\"")));
+			pCStringWriter->WriteString(XmlUtils::ToString(nTextId, L"%08X"));
+			pCStringWriter->WriteString(std::wstring(_T("\">")));
+		}
+		else 
+        {
+			pCStringWriter->WriteString(std::wstring(_T("<w:tr>")));
+		}	
+		
 		READ1_DEF(length, res, this->Read_Row, poResult);
         pCStringWriter->WriteString(std::wstring(_T("</w:tr>")));
 	}

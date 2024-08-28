@@ -358,7 +358,8 @@ extern int g_nCurFormatVersion;
 		SuppressLineNumbers = 44,
 		CnfStyle = 45,
 		SnapToGrid = 46,
-		Bidi = 47
+		Bidi = 47,
+		DivId = 48,
 	};}
 	namespace c_oSerProp_rPrType{enum c_oSerProp_rPrType
 	{
@@ -442,7 +443,8 @@ extern int g_nCurFormatVersion;
 		trPrChange = 17,
 		TableCellSpacingTwips = 18,
 		Height_ValueTwips = 19,
-		CnfStyle = 20
+		CnfStyle = 20,
+		DivId = 21
 	};}
 	namespace c_oSerProp_cellPrType{enum c_oSerProp_cellPrType
 	{
@@ -541,7 +543,9 @@ extern int g_nCurFormatVersion;
 		DocParts = 27,
 		PermStart = 28,
 		PermEnd = 29,
-		JsaProjectExternal = 30
+		JsaProjectExternal = 30,
+		ParaId = 31,
+		TextId = 32
 	};}
 	namespace c_oSerGlossary {
 		enum c_oSerGlossary
@@ -580,7 +584,8 @@ extern int g_nCurFormatVersion;
 		MoveFromRangeStart = 14,
 		MoveFromRangeEnd = 15,
 		MoveToRangeStart = 16,
-		MoveToRangeEnd = 17
+		MoveToRangeEnd = 17,
+		Row_ParaId = 18,
 	};}
 	namespace c_oSerRunType{enum c_oSerRunType
 	{
