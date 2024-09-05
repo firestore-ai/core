@@ -622,7 +622,8 @@ extern int g_nCurFormatVersion;
 		delInstrText = 31,
 		linebreakClearAll = 32,
 		linebreakClearLeft = 33,
-		linebreakClearRight = 34
+		linebreakClearRight = 34,
+		ruby = 35
 	};}
 	namespace c_oSerVbaProjectTypes{enum c_oSerVbaProjectType
 	{

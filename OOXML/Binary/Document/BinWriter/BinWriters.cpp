@@ -6594,11 +6594,79 @@ void BinaryDocumentTableWriter::WriteRunContent(std::vector<OOX::WritingElement*
 				m_oBcw.WriteItemEnd(nCurPos);
 				break;
 			}
+		case OOX::et_w_ruby:
+			{
+				OOX::Logic::CRuby* pRuby = static_cast<OOX::Logic::CRuby*>(item);
+				int nCurPos = m_oBcw.WriteItemStart(c_oSerRunType::ruby);
+				WriteRuby(pRuby);
+				m_oBcw.WriteItemEnd(nCurPos);
+				break;
+			}
 		default:
 			break;
 		}
 	}
 }
+void BinaryDocumentTableWriter::WriterRuby(const OOX::Logic::CRuby &pRuby)
+{
+	int nCurPos = m_oBcw.WriteItemStart(c_oSerRunType::Ruby);
+
+	if ( pRuby.m_oRubyPr.IsInit() )
+		WriteRubyPr(pRuby.m_oRubyPr.get());
+		
+	if ( pRuby.m_oRubyText.IsInit() )
+	{
+		int nCurPos = m_oBcw.WriteItemStart(c_oSerRunType::RubyText);
+		WriteRun(pRuby.m_oRubyText.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}	
+	if ( pRuby.m_oRubyBase.IsInit() )
+	{
+		int nCurPos = m_oBcw.WriteItemStart(c_oSerRunType::RubyBase);
+		WriteRun(pRuby.m_oRubyBase.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+
+	m_oBcw.WriteItemEnd(nCurPos);
+}
+void BinaryDocumentTableWriter::WriterRubyPr(const OOX::Logic::CRubyProperty &pRubyPr)
+{
+	int nCurPos = m_oBcw.WriteItemStart(c_oSerRunType::RubyPr);
+
+	if ( pRubyPr.m_oHps.IsInit() )
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_rubyPrType::Hps);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
+		m_oBcw.m_oStream.WriteLONG(pr.m_oHps->get()->ToHps());		
+	}			
+	if ( pRubyPr.m_oHpsRaise.IsInit() )
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_rubyPrType::HpsRaise);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
+		m_oBcw.m_oStream.WriteLONG(pr.m_oHpsRaise->get()->ToHps());		
+	}
+	if ( pRubyPr.m_oHpsBaseText.IsInit() )
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_rubyPrType::HpsBaseText);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
+		m_oBcw.m_oStream.WriteLONG(pr.m_oHpsBaseText->get()->ToHps());		
+	}
+	if ( pRubyPr.m_oRubyAlign.IsInit() )
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_rubyPrType::RubyAlign);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBYTE(pr.m_oRubyAlign->get()->GetValue());		
+	}		
+	if ( pRubyPr.m_oLang.IsInit() && pRubyPr.m_oLang->m_oVal.IsInit() )
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_rubyPrType::Lang);		
+		m_oBcw.m_oStream.WriteStringW3(pRubyPr.m_oLang->m_oVal);		
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+
+	m_oBcw.WriteItemEnd(nCurPos);
+}
+
 void BinaryDocumentTableWriter::WriteNoteRef(const nullable<SimpleTypes::COnOff>& oCustomMarkFollows, const nullable<SimpleTypes::CDecimalNumber>& oId)
 {
 	int nCurPos = 0;

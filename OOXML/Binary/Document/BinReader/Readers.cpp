@@ -8377,6 +8377,31 @@ int Binary_DocumentTableReader::ReadRunContent(BYTE type, long length, void* poR
 		GetRunStringWriter().WriteString(sText);
 		GetRunStringWriter().WriteString(std::wstring(_T("</w:delInstrText>")));
 	}
+	else if ( c_oSerRunType::ruby == type )
+	{
+		READ1_DEF(length, res, this->ReadRuby, poResult);
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+int Binary_DocumentTableReader::ReadRuby(BYTE type, long length, void* poResult)
+{
+	int res = c_oSerConstants::ReadOk;
+	if ( c_oSerRubyType::rubyPr == type )
+	{
+		READ1_DEF(length, res, this->ReadRubyPr, poResult);
+	}
+	else if ( c_oSerRubyType::rubyText == type )
+	{
+		READ1_DEF(length, res, this->ReadRubyText, poResult);
+	}
+	else if ( c_oSerRubyType::rt == type )
+	{
+		READ1_DEF(length, res, this->ReadRt, poResult);
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;

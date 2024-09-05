@@ -39,8 +39,12 @@
 #include "../Logic/RunProperty.h"
 #include "../Logic/Annotations.h"
 #include "../Logic/Pict.h"
+#include "../Logic/Ruby.h"
 #include "../Drawing/Drawing.h"
 #include "../../PPTXFormat/Logic/RunProperties.h"
+
+class XmlUtils::CXmlLiteReader;
+class XmlUtils::CXmlLiteWriter;
 
 namespace OOX
 {	
