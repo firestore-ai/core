@@ -45,6 +45,7 @@
 #include "../../../DocxFormat/Endnote.h"
 #include "../../../DocxFormat/Math/oMathPara.h"
 
+#include "../../../DocxFormat/Logic/Ruby.h"
 #include "../../../DocxFormat/Logic/Sdt.h"
 #include "../../../DocxFormat/Logic/Table.h"
 #include "../../../DocxFormat/Logic/Paragraph.h"
@@ -498,6 +499,8 @@ namespace BinDocxRW
 		void WriteSdtTextFormPrFormat(const ComplexTypes::Word::CTextFormFormat& oFormat);
 		void WriteSdtPicture(const OOX::Logic::CSdtPicture& oSdtPicture);
 		void WriteSdtComplexFormPr(const OOX::Logic::CComplexFormPr& oComplexFormPr);
+		void WriteRuby(const OOX::Logic::CRuby &pRuby);
+		void WriteRubyPr(const OOX::Logic::CRubyProperty &pRubyPr);
 	};
 	class BinaryCustomsTableWriter
 	{
