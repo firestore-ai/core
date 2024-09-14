@@ -6597,9 +6597,7 @@ void BinaryDocumentTableWriter::WriteRunContent(std::vector<OOX::WritingElement*
 		case OOX::et_w_ruby:
 			{
 				OOX::Logic::CRuby* pRuby = static_cast<OOX::Logic::CRuby*>(item);
-				int nCurPos = m_oBcw.WriteItemStart(c_oSerRunType::ruby);
-				WriteRuby(pRuby);
-				m_oBcw.WriteItemEnd(nCurPos);
+				WriteRuby(*pRuby);
 				break;
 			}
 		default:
@@ -6609,59 +6607,59 @@ void BinaryDocumentTableWriter::WriteRunContent(std::vector<OOX::WritingElement*
 }
 void BinaryDocumentTableWriter::WriteRuby(const OOX::Logic::CRuby &pRuby)
 {
-	int nCurPos = m_oBcw.WriteItemStart(c_oSerRunType::Ruby);
+	int nCurPos = m_oBcw.WriteItemStart(c_oSerRunType::ruby);
 
 	if ( pRuby.m_oRubyPr.IsInit() )
 		WriteRubyPr(pRuby.m_oRubyPr.get());
 		
 	if ( pRuby.m_oRubyText.IsInit() )
 	{
-		int nCurPos = m_oBcw.WriteItemStart(c_oSerRubyType::RubyText);
-		WriteRun(pRuby.m_oRubyText.get());
+		int nCurPos = m_oBcw.WriteItemStart(c_oSerRubyType::rubyText);
+		WriteRun(pRuby.m_oRubyText.GetPointer());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}	
 	if ( pRuby.m_oRubyBase.IsInit() )
 	{
-		int nCurPos = m_oBcw.WriteItemStart(c_oSerRubyType::RubyBase);
-		WriteRun(pRuby.m_oRubyBase.get());
+		int nCurPos = m_oBcw.WriteItemStart(c_oSerRubyType::rubyBase);
+		WriteRun(pRuby.m_oRubyBase.GetPointer());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
 
 	m_oBcw.WriteItemEnd(nCurPos);
 }
-void BinaryDocumentTableWriter::WriteRubyPr(const OOX::Logic::CRubyProperty &pRubyPr)
+void BinaryDocumentTableWriter::WriteRubyPr(const OOX::Logic::CRubyProperty &rubyPr)
 {
 	int nCurPos = m_oBcw.WriteItemStart(c_oSerRubyType::rubyPr);
 
-	if ( pRubyPr.m_oHps.IsInit() )
+	if ( rubyPr.m_oHps.IsInit() )
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerProp_rubyPrType::Hps);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
-		m_oBcw.m_oStream.WriteLONG(pr.m_oHps->get()->ToHps());		
+		m_oBcw.m_oStream.WriteLONG(rubyPr.m_oHps.get().m_oVal.get().ToHps());		
 	}			
-	if ( pRubyPr.m_oHpsRaise.IsInit() )
+	if ( rubyPr.m_oHpsRaise.IsInit() )
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerProp_rubyPrType::HpsRaise);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
-		m_oBcw.m_oStream.WriteLONG(pr.m_oHpsRaise->get()->ToHps());		
+		m_oBcw.m_oStream.WriteLONG(rubyPr.m_oHpsRaise.get().m_oVal.get().ToHps());		
 	}
-	if ( pRubyPr.m_oHpsBaseText.IsInit() )
+	if ( rubyPr.m_oHpsBaseText.IsInit() )
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerProp_rubyPrType::HpsBaseText);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
-		m_oBcw.m_oStream.WriteLONG(pr.m_oHpsBaseText->get()->ToHps());		
+		m_oBcw.m_oStream.WriteLONG(rubyPr.m_oHpsBaseText.get().m_oVal.get().ToHps());		
 	}
-	if ( pRubyPr.m_oRubyAlign.IsInit() )
+	if ( rubyPr.m_oRubyAlign.IsInit() )
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerProp_rubyPrType::RubyAlign);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-		m_oBcw.m_oStream.WriteBYTE(pr.m_oRubyAlign->get()->GetValue());		
+		m_oBcw.m_oStream.WriteBYTE(rubyPr.m_oRubyAlign.get().m_oVal.get().GetValue());		
 	}		
-	if ( pRubyPr.m_oLang.IsInit() && pRubyPr.m_oLang->m_oVal.IsInit() )
+	if ( rubyPr.m_oLid.IsInit() && rubyPr.m_oLid->m_oVal.IsInit() )
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerProp_rubyPrType::Lid);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
-		m_oBcw.m_oStream.WriteStringW(*pRubyPr.m_oLang->m_oVal);
+		m_oBcw.m_oStream.WriteStringW(*rubyPr.m_oLid->m_oVal);
 	}
 
 	m_oBcw.WriteItemEnd(nCurPos);

@@ -2,6 +2,7 @@
 #include "Ruby.h"
 
 #include "../../PPTXFormat/Logic/Xfrm.h"
+#include "../../DocxFormat/Logic/Run.h"
 
 namespace OOX
 {
@@ -17,25 +18,25 @@ namespace OOX
         }
         CRubyProperty::CRubyProperty(const XmlUtils::CXmlNode& oNode) 
         {
-            fromXML(oNode);
+            fromXML( (XmlUtils::CXmlNode &)oNode );
         }
         CRubyProperty::CRubyProperty(const XmlUtils::CXmlLiteReader& oReader) 
         {
-            fromXML(oReader);
+            fromXML( (XmlUtils::CXmlLiteReader &)oReader );
         }
         const CRubyProperty& CRubyProperty::operator =(const XmlUtils::CXmlNode& oNode)
         {
-            fromXML(oNode);
+            fromXML( (XmlUtils::CXmlNode &)oNode );
             return *this;
         }
         const CRubyProperty& CRubyProperty::operator =(const XmlUtils::CXmlLiteReader& oReader)
         {
-            fromXML(oReader);
+            fromXML( (XmlUtils::CXmlLiteReader &)oReader );
             return *this;
         }
-        void CRubyProperty::fromXml(XmlUtils::CXmlLiteReader& oReader, CRuby* pRuby)
+        void CRubyProperty::fromXML(XmlUtils::CXmlLiteReader& oReader)
         {
-            if ( !oReader.IsEmptyNode() )
+            if ( oReader.IsEmptyNode() )
                 return;
 
             int nParentDepth = oReader.GetDepth();
@@ -86,7 +87,11 @@ namespace OOX
         {
             std::wstring sResult = L"<w:rubyPr>";
 
-            if (m_oRubyAlign.IsInit())   sResult += m_oRubyAlign->ValNode(L"w:rubyAlign");
+            if (m_oRubyAlign.IsInit())   {
+                sResult += L"<w:rubyAlign ";
+                sResult += m_oRubyAlign->ToString();
+                sResult += L" />";
+            }
             if (m_oHps.IsInit())         sResult += m_oHps->ValNode(L"w:hps");
             if (m_oHpsRaise.IsInit())    sResult += m_oHpsRaise->ValNode(L"w:hpsRaise");
             if (m_oHpsBaseText.IsInit()) sResult += m_oHpsBaseText->ValNode(L"w:hpsBaseText");
@@ -103,7 +108,7 @@ namespace OOX
             m_oHpsBaseText.reset();
             m_oLid.reset();            
         }
-        void CRubyProperty::IsNoEmpty() 
+        bool CRubyProperty::IsNoEmpty() 
         {
             return m_oRubyAlign.IsInit() || m_oHps.IsInit() || m_oHpsRaise.IsInit() || m_oHpsBaseText.IsInit() || m_oLid.IsInit();
         }
@@ -135,7 +140,7 @@ namespace OOX
 			XmlUtils::CXmlNode oChild;
 
             if ( oNode.GetNode( L"w:rubyPr", oChild) )
-                m_oRubyAlign = oChild;
+                m_oRubyPr = oChild;
             
             if (oNode.GetNode( L"w:rt", oChild)) 
             {
@@ -143,7 +148,7 @@ namespace OOX
                     m_oRubyText = oChild;
             }
             
-            if (oNode.GetNode( L"w:rtBase", oChild))
+            if (oNode.GetNode( L"w:rubyBase", oChild))
             {
                 if ( oChild.GetNode( L"w:r", oChild) )
                     m_oRubyBase = oChild;
@@ -151,21 +156,50 @@ namespace OOX
 		}
 		void CRuby::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
-			if ( !oReader.IsEmptyNode() )
-				oReader.ReadTillEnd( oReader.GetDepth() );
+			if ( oReader.IsEmptyNode() )
+                return;
+
+            int nParentDepth = oReader.GetDepth();
+            while(oReader.ReadNextSiblingNode(nParentDepth))
+            {
+                std::wstring sName = oReader.GetName();
+                if ( L"w:rubyPr" == sName )
+                {
+                    m_oRubyPr = new CRubyProperty(oReader);
+                }
+                else if ( L"w:rt" == sName )
+                {
+                    oReader.ReadNextSiblingNode(oReader.GetDepth());
+                    if ( L"w:r" == oReader.GetName() )
+                    {
+                        m_oRubyText = new CRun(WritingElement::m_pMainDocument);
+                        m_oRubyText = oReader;
+                    }
+                }
+                else if ( L"w:rubyBase" == sName )
+                {
+                    oReader.ReadNextSiblingNode(oReader.GetDepth());
+                    if ( L"w:r" == oReader.GetName() )                    
+                    {
+                        m_oRubyBase = new CRun(WritingElement::m_pMainDocument);
+                        m_oRubyBase = oReader;
+                    }
+                }
+            }				
 		}
+        
 		std::wstring CRuby::toXML() const
 		{
             std::wstring sResult = _T("<w:ruby>");
 
-            sResult += CRubyProperty::toXML();
+            sResult += m_oRubyPr->toXML();
 
             sResult += _T("<w:rt>");
-            sResult += m_oRubyText.toXML();
+            sResult += m_oRubyText->toXML();
             sResult += _T("</w:rt>");
 
             sResult += _T("<w:rubyBase>");
-            sResult += m_oRubyBase.toXML();
+            sResult += m_oRubyBase->toXML();
             sResult += _T("</w:rubyBase>");
 
             sResult += _T("</w:ruby>");

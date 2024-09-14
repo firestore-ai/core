@@ -30,9 +30,9 @@ namespace OOX
 
             virtual void fromXML(XmlUtils::CXmlNode& oNode);
             virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
-            void fromXml(XmlUtils::CXmlLiteReader& oReader, CRuby* pRuby);
+            
             virtual std::wstring toXML() const;
-            virtual void toXmlWriter(XmlUtils::CXmlLiteWriter& oWriter) const;
+            virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
             virtual EElementType getType() const;
 
             template <typename Type>
@@ -51,7 +51,7 @@ namespace OOX
             static const CRubyProperty Merge(const CRubyProperty& oPrev, const CRubyProperty& oCurrent);
 
             
-            nullable<SimpleTypes::CRubyAlign> m_oRubyAlign;
+            nullable<ComplexTypes::Word::CRubyAlign>  m_oRubyAlign;
             nullable<ComplexTypes::Word::CHpsMeasure> m_oHps;
             nullable<ComplexTypes::Word::CHpsMeasure> m_oHpsRaise;
             nullable<ComplexTypes::Word::CHpsMeasure> m_oHpsBaseText;

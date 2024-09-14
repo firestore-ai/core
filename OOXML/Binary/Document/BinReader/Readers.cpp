@@ -1043,11 +1043,6 @@ int Binary_pPrReader::ReadContent(BYTE type, long length, void* poResult)
 		pPPr->m_oSuppressLineNumbers.Init();
 		pPPr->m_oSuppressLineNumbers->m_oVal.FromBool(m_oBufferedStream.GetBool());
 	}break;
-	case c_oSerProp_pPrType::SnapToGrid:
-	{
-		pPPr->m_oSnapToGrid.Init();
-		pPPr->m_oSnapToGrid->m_oVal.FromBool(m_oBufferedStream.GetBool());
-	}break;
 	case c_oSerProp_pPrType::CnfStyle:
 	{
 		pPPr->m_oCnfStyle.Init();
@@ -8384,8 +8379,8 @@ int Binary_DocumentTableReader::ReadRunContent(BYTE type, long length, void* poR
 		GetRunStringWriter().WriteString(std::wstring(_T("</w:delInstrText>")));
 	}
 	else if ( c_oSerRunType::ruby == type )
-	{
-		GetRunStringWriter().WriteString(std::wstring(_T("<w:ruby>")));
+	{		
+		GetRunStringWriter().WriteString(std::wstring(_T("<w:ruby>")));		
 		READ1_DEF(length, res, this->ReadRuby, poResult);
 		GetRunStringWriter().WriteString(std::wstring(_T("</w:ruby>")));
 	}
@@ -8399,16 +8394,20 @@ int Binary_DocumentTableReader::ReadRuby(BYTE type, long length, void* poResult)
 	if ( c_oSerRubyType::rubyPr == type )
 	{
 		GetRunStringWriter().WriteString(std::wstring(_T("<w:rubyPr>")));
-		READ1_DEF(length, res, this->ReadRubyPr, poResult);
+		READ2_DEF(length, res, this->ReadRubyPr, poResult);
 		GetRunStringWriter().WriteString(std::wstring(_T("</w:rubyPr>")));
 	}
 	else if ( c_oSerRubyType::rubyText == type )
 	{
-		READ1_DEF(length, res, this->ReadRubyText, poResult);
+		GetRunStringWriter().WriteString(std::wstring(_T("<w:rt>")));
+		READ1_DEF(length, res, this->ReadParagraphContent, poResult);
+		GetRunStringWriter().WriteString(std::wstring(_T("</w:rt>")));
 	}
 	else if ( c_oSerRubyType::rubyBase == type )
 	{
-		READ1_DEF(length, res, this->ReadRt, poResult);
+		GetRunStringWriter().WriteString(std::wstring(_T("<w:rubyBase>")));	
+		READ1_DEF(length, res, this->ReadParagraphContent, poResult);
+		GetRunStringWriter().WriteString(std::wstring(_T("</w:rubyBase>")));
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;		
@@ -8434,14 +8433,13 @@ int Binary_DocumentTableReader::ReadRubyPr(BYTE type, long length, void* poResul
 	}
 	else if (  c_oSerProp_rubyPrType::RubyAlign == type )
 	{
-		CRubyAlign oRubyAlign;
-		BYTE nRubyAlign = m_oBufferedStream.GetByte();		
-		oRubyAlign.SetValue((ERubyAlign)nRubyAlign);
+		SimpleTypes::CRubyAlign oRubyAlign;
+		oRubyAlign.SetValueFromByte(m_oBufferedStream.GetUChar());
 		GetRunStringWriter().WriteString(std::wstring(_T("<w:rubyAlign w:val=\"" + oRubyAlign.ToString() + L"\"/>")));
 	}
 	else if (  c_oSerProp_rubyPrType::Lid == type )
 	{
-		std::wstring sLid = m_oBufferedStream.GetString();
+		std::wstring sLid = m_oBufferedStream.GetString3(length);
 		GetRunStringWriter().WriteString(std::wstring(_T("<w:lid w:val=\"" + sLid + L"\"/>")));
 	}
 	else

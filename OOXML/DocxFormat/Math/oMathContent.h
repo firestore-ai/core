@@ -44,7 +44,6 @@
 #include "../../PPTXFormat/Logic/RunProperties.h"
 
 class XmlUtils::CXmlLiteReader;
-class XmlUtils::CXmlLiteWriter;
 
 namespace OOX
 {	
