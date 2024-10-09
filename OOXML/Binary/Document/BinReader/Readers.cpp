@@ -4827,7 +4827,7 @@ bool Binary_DocumentTableReader::TryReadParaId(BYTE defType, _INT32& nParaId, _I
 			LONG nSize = m_oBufferedStream.GetLong();
 			if (nSize == sizeof(_INT32)*2)
 			{
-				hasParaId = true;
+				hasParaId = false;
 				nParaId = m_oBufferedStream.GetLong();
 				nTextId = m_oBufferedStream.GetLong();			
 			}
