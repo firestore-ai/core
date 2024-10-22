@@ -3875,14 +3875,6 @@ void BinaryDocumentTableWriter::WriteAltChunk(OOX::Media& oAltChunkFile, OOX::CS
 void BinaryDocumentTableWriter::WriteParapraph(OOX::Logic::CParagraph& par, OOX::Logic::CParagraphProperty* pPr)
 {
 	int nCurPos = 0;
-//paraId
-	if (par.m_oParaId.IsInit())
-	{
-		nCurPos = m_oBcw.WriteItemStart(c_oSerParType::ParaId);
-		m_oBcw.m_oStream.WriteLONG(par.m_oParaId->GetValue());
-		m_oBcw.m_oStream.WriteLONG(par.m_oTextId->GetValue());
-		m_oBcw.WriteItemEnd(nCurPos);
-	}
 //pPr
 	if (NULL != pPr)
 	{
@@ -7759,15 +7751,7 @@ void BinaryDocumentTableWriter::WriteTableContent(std::vector<OOX::WritingElemen
 }
 void BinaryDocumentTableWriter::WriteRow(const OOX::Logic::CTr& Row, OOX::Logic::CTableProperty* pTblPr, int nCurRowIndex)
 {
-	int nCurPos = 0;
-	if (Row.m_oParaId.IsInit())
-	{
-		nCurPos = m_oBcw.WriteItemStart(c_oSerDocTableType::Row_ParaId);
-		m_oBcw.m_oStream.WriteLONG(Row.m_oParaId->GetValue());
-		m_oBcw.m_oStream.WriteLONG(Row.m_oTextId->GetValue());
-		m_oBcw.WriteItemEnd(nCurPos);
-	}
-
+	int nCurPos = 0;	
 	if (NULL != Row.m_pTableRowProperties)
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerDocTableType::Row_Pr);
