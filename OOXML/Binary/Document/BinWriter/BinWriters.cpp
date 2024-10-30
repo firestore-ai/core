@@ -3875,14 +3875,6 @@ void BinaryDocumentTableWriter::WriteAltChunk(OOX::Media& oAltChunkFile, OOX::CS
 void BinaryDocumentTableWriter::WriteParapraph(OOX::Logic::CParagraph& par, OOX::Logic::CParagraphProperty* pPr)
 {
 	int nCurPos = 0;
-//paraId
-	if (par.m_oParaId.IsInit())
-	{
-		nCurPos = m_oBcw.WriteItemStart(c_oSerParType::ParaId);
-		m_oBcw.m_oStream.WriteLONG(par.m_oParaId->GetValue());
-		m_oBcw.m_oStream.WriteLONG(par.m_oTextId->GetValue());
-		m_oBcw.WriteItemEnd(nCurPos);
-	}
 //pPr
 	if (NULL != pPr)
 	{
@@ -6594,11 +6586,77 @@ void BinaryDocumentTableWriter::WriteRunContent(std::vector<OOX::WritingElement*
 				m_oBcw.WriteItemEnd(nCurPos);
 				break;
 			}
+		case OOX::et_w_ruby:
+			{
+				OOX::Logic::CRuby* pRuby = static_cast<OOX::Logic::CRuby*>(item);
+				WriteRuby(*pRuby);
+				break;
+			}
 		default:
 			break;
 		}
 	}
 }
+void BinaryDocumentTableWriter::WriteRuby(const OOX::Logic::CRuby &pRuby)
+{
+	int nCurPos = m_oBcw.WriteItemStart(c_oSerRunType::ruby);
+
+	if ( pRuby.m_oRubyPr.IsInit() )
+		WriteRubyPr(pRuby.m_oRubyPr.get());
+		
+	if ( pRuby.m_oRubyText.IsInit() )
+	{
+		int nCurPos = m_oBcw.WriteItemStart(c_oSerRubyType::rubyText);
+		WriteRun(pRuby.m_oRubyText.GetPointer());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}	
+	if ( pRuby.m_oRubyBase.IsInit() )
+	{
+		int nCurPos = m_oBcw.WriteItemStart(c_oSerRubyType::rubyBase);
+		WriteRun(pRuby.m_oRubyBase.GetPointer());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+
+	m_oBcw.WriteItemEnd(nCurPos);
+}
+void BinaryDocumentTableWriter::WriteRubyPr(const OOX::Logic::CRubyProperty &rubyPr)
+{
+	int nCurPos = m_oBcw.WriteItemStart(c_oSerRubyType::rubyPr);
+
+	if ( rubyPr.m_oHps.IsInit() )
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerProp_rubyPrType::Hps);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
+		m_oBcw.m_oStream.WriteLONG(rubyPr.m_oHps.get().m_oVal.get().ToHps());		
+	}			
+	if ( rubyPr.m_oHpsRaise.IsInit() )
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerProp_rubyPrType::HpsRaise);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
+		m_oBcw.m_oStream.WriteLONG(rubyPr.m_oHpsRaise.get().m_oVal.get().ToHps());		
+	}
+	if ( rubyPr.m_oHpsBaseText.IsInit() )
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerProp_rubyPrType::HpsBaseText);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
+		m_oBcw.m_oStream.WriteLONG(rubyPr.m_oHpsBaseText.get().m_oVal.get().ToHps());		
+	}
+	if ( rubyPr.m_oRubyAlign.IsInit() )
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerProp_rubyPrType::RubyAlign);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBYTE(rubyPr.m_oRubyAlign.get().m_oVal.get().GetValue());		
+	}		
+	if ( rubyPr.m_oLid.IsInit() && rubyPr.m_oLid->m_oVal.IsInit() )
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerProp_rubyPrType::Lid);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+		m_oBcw.m_oStream.WriteStringW(*rubyPr.m_oLid->m_oVal);
+	}
+
+	m_oBcw.WriteItemEnd(nCurPos);
+}
+
 void BinaryDocumentTableWriter::WriteNoteRef(const nullable<SimpleTypes::COnOff>& oCustomMarkFollows, const nullable<SimpleTypes::CDecimalNumber>& oId)
 {
 	int nCurPos = 0;
@@ -7693,15 +7751,7 @@ void BinaryDocumentTableWriter::WriteTableContent(std::vector<OOX::WritingElemen
 }
 void BinaryDocumentTableWriter::WriteRow(const OOX::Logic::CTr& Row, OOX::Logic::CTableProperty* pTblPr, int nCurRowIndex)
 {
-	int nCurPos = 0;
-	if (Row.m_oParaId.IsInit())
-	{
-		nCurPos = m_oBcw.WriteItemStart(c_oSerDocTableType::Row_ParaId);
-		m_oBcw.m_oStream.WriteLONG(Row.m_oParaId->GetValue());
-		m_oBcw.m_oStream.WriteLONG(Row.m_oTextId->GetValue());
-		m_oBcw.WriteItemEnd(nCurPos);
-	}
-
+	int nCurPos = 0;	
 	if (NULL != Row.m_pTableRowProperties)
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerDocTableType::Row_Pr);

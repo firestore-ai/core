@@ -896,8 +896,9 @@ namespace OOX
 		et_w_revisionView, // <w:revisionView>
 		et_w_rsids, // <w:rsids>
 		et_w_rPr, // <w:rPr>
-		et_w_rPrChange, // <w:rPrChange>
+		et_w_rPrChange, // <w:rPrChange>		
 		et_w_ruby, // <w:ruby>
+		et_w_rubyPr, // <w:rubyPr>	
 		et_w_saveThroughXslt, // <w:saveThroughXslt>
 		et_w_sdt, // <w:sdt>
 		et_w_sdtContent, // <w:sdtContent>

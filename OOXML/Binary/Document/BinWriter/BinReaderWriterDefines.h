@@ -421,6 +421,20 @@ extern int g_nCurFormatVersion;
 		Scene3d = 55,
 		Kern = 56
 	};}
+	namespace c_oSerRubyType{enum c_oSerRubyType
+	{
+		rubyPr = 0,
+		rubyBase = 1,
+		rubyText = 2,		
+	};}
+	namespace c_oSerProp_rubyPrType{enum c_oSerProp_rubyPrType
+	{		
+		RubyAlign = 0,
+		Hps = 1,
+		HpsRaise = 2,
+		HpsBaseText = 3,
+		Lid = 4
+	};}
 	namespace c_oSerProp_rowPrType{enum c_oSerProp_rowPrType
 	{
 		CantSplit = 0,
@@ -622,7 +636,8 @@ extern int g_nCurFormatVersion;
 		delInstrText = 31,
 		linebreakClearAll = 32,
 		linebreakClearLeft = 33,
-		linebreakClearRight = 34
+		linebreakClearRight = 34,
+		ruby = 35
 	};}
 	namespace c_oSerVbaProjectTypes{enum c_oSerVbaProjectType
 	{

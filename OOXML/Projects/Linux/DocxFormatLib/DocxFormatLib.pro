@@ -54,6 +54,7 @@ SOURCES += \
 	../../../DocxFormat/Logic/Pict.cpp \
 	../../../DocxFormat/Logic/FldChar.cpp \
 	../../../DocxFormat/Logic/RunContent.cpp \
+	../../../DocxFormat/Logic/Ruby.cpp \
 	../../../DocxFormat/Logic/VmlOfficeDrawing.cpp \
 	../../../DocxFormat/Logic/VmlWord.cpp \
 	../../../DocxFormat/Logic/Shape.cpp \

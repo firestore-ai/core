@@ -493,6 +493,8 @@ public:
 	int ReadSdtComplexFormPr(BYTE type, long length, void* poResult);
 
 	bool TryReadParaId(BYTE type, _INT32& nParaId, _INT32& nTextId);
+	int ReadRuby(BYTE type, long length, void* poResult);
+	int ReadRubyPr(BYTE type, long length, void* poResult);
 };
 class Binary_NotesTableReader : public Binary_CommonReader
 {

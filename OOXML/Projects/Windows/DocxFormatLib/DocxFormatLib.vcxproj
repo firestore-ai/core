@@ -460,6 +460,7 @@
     <ClCompile Include="..\..\..\DocxFormat\Logic\Run.cpp" />
     <ClCompile Include="..\..\..\DocxFormat\Logic\RunContent.cpp" />
     <ClCompile Include="..\..\..\DocxFormat\Logic\RunProperty.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\Logic\Ruby.cpp" />
     <ClCompile Include="..\..\..\DocxFormat\Logic\Sdt.cpp" />
     <ClCompile Include="..\..\..\DocxFormat\Logic\SectionProperty.cpp" />
     <ClCompile Include="..\..\..\DocxFormat\Logic\Shape.cpp" />

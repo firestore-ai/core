@@ -50,6 +50,7 @@
 #include "FldSimple.h"
 #include "Pict.h"
 #include "Annotations.h"
+#include "Ruby.h"
 
 #include "../../Common/SimpleTypes_Word.h"
 #include "../../../DesktopEditor/common/StringExt.h"

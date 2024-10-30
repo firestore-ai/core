@@ -1351,6 +1351,25 @@ namespace ComplexTypes
 			nullable<SimpleTypes::COnOff>					m_oVal;
 		};
 
+		class CRubyAlign : public ComplexType
+		{
+		public:
+			ComplexTypes_AdditionConstructors(CRubyAlign)
+
+			CRubyAlign();
+			virtual ~CRubyAlign();
+
+			virtual void FromXML(XmlUtils::CXmlNode& oNode);
+			virtual void FromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual std::wstring ToString() const;
+
+		private:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+
+		public:
+			nullable<SimpleTypes::CRubyAlign> m_oVal;
+		};
+
 	} // Word
 //-------------------------------------------------------------------------------------------------------------------------
 

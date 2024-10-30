@@ -51,6 +51,7 @@
 #include "../../../DocxFormat/Logic/Pict.cpp"
 #include "../../../DocxFormat/Logic/FldChar.cpp"
 #include "../../../DocxFormat/Logic/RunContent.cpp"
+#include "../../../DocxFormat/Logic/Ruby.cpp"
 #include "../../../DocxFormat/Logic/VmlOfficeDrawing.cpp"
 #include "../../../DocxFormat/Logic/VmlWord.cpp"
 #include "../../../DocxFormat/Logic/Shape.cpp"

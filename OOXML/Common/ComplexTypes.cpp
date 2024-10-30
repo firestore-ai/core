@@ -2916,7 +2916,40 @@ namespace Word
 		WritingElement_ReadAttributes_End(oReader)
 	}
 
+//--------------------------------------------------------------------------------
+//
+//--------------------------------------------------------------------------------
+
+	CRubyAlign::CRubyAlign() {}
+	CRubyAlign::~CRubyAlign() {}
+
+	void CRubyAlign::FromXML(XmlUtils::CXmlNode& oNode)
+	{
+		XmlMacroReadAttributeBase(oNode, L"w:val", m_oVal);
+	}
+	void CRubyAlign::FromXML(XmlUtils::CXmlLiteReader& oReader)
+	{
+		ReadAttributes(oReader);
+	}
+	std::wstring CRubyAlign::ToString() const
+	{
+		std::wstring sResult;
+
+		if (m_oVal.IsInit())
+		{
+			sResult += L"w:val=\"" + m_oVal->ToString() + L"\"";
+		}
+		return sResult;
+	}
+
+	void CRubyAlign::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+	{
+		WritingElement_ReadAttributes_Start(oReader)
+		WritingElement_ReadAttributes_ReadSingle(oReader, L"w:val", m_oVal)
+		WritingElement_ReadAttributes_End(oReader)
+	}
 } // Word
+
 //-------------------------------------------------------------------------------------------------------------------------
 
 namespace Drawing

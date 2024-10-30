@@ -299,24 +299,8 @@ namespace OOX
 			nullable<SimpleTypes::CPTabRelativeTo> m_oRelativeTo;
 
 		};
+		
 
-		//--------------------------------------------------------------------------------
-		// CRuby 17.3.3.25 (Part 1)
-		//--------------------------------------------------------------------------------	
-		class CRuby : public WritingElement
-		{
-		public:
-			WritingElement_AdditionMethods(CRuby)
-			CRuby(OOX::Document *pMain = NULL);
-			virtual ~CRuby();
-
-		public:
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode);
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
-
-			virtual std::wstring      toXML() const;
-			virtual EElementType getType() const;
-		};
 
 		//--------------------------------------------------------------------------------
 		// CSoftHyphen 17.3.3.29 (Part 1)

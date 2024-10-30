@@ -49,6 +49,7 @@
 #include "../../../DocxFormat/Logic/TableProperty.h"
 #include "../../../DocxFormat/Logic/Sdt.h"
 #include "../../../DocxFormat/Numbering.h"
+#include "../../../DocxFormat/Logic/Ruby.h"
 
 #include "../DocWrapper/XlsxSerializer.h"
 
@@ -4826,7 +4827,7 @@ bool Binary_DocumentTableReader::TryReadParaId(BYTE defType, _INT32& nParaId, _I
 			LONG nSize = m_oBufferedStream.GetLong();
 			if (nSize == sizeof(_INT32)*2)
 			{
-				hasParaId = true;
+				hasParaId = false;
 				nParaId = m_oBufferedStream.GetLong();
 				nTextId = m_oBufferedStream.GetLong();			
 			}
@@ -8377,10 +8378,75 @@ int Binary_DocumentTableReader::ReadRunContent(BYTE type, long length, void* poR
 		GetRunStringWriter().WriteString(sText);
 		GetRunStringWriter().WriteString(std::wstring(_T("</w:delInstrText>")));
 	}
+	else if ( c_oSerRunType::ruby == type )
+	{		
+		GetRunStringWriter().WriteString(std::wstring(_T("<w:ruby>")));		
+		READ1_DEF(length, res, this->ReadRuby, poResult);
+		GetRunStringWriter().WriteString(std::wstring(_T("</w:ruby>")));
+	}
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;
 }
+int Binary_DocumentTableReader::ReadRuby(BYTE type, long length, void* poResult)
+{	
+	int res = c_oSerConstants::ReadOk;
+	if ( c_oSerRubyType::rubyPr == type )
+	{
+		GetRunStringWriter().WriteString(std::wstring(_T("<w:rubyPr>")));
+		READ2_DEF(length, res, this->ReadRubyPr, poResult);
+		GetRunStringWriter().WriteString(std::wstring(_T("</w:rubyPr>")));
+	}
+	else if ( c_oSerRubyType::rubyText == type )
+	{
+		GetRunStringWriter().WriteString(std::wstring(_T("<w:rt>")));
+		READ1_DEF(length, res, this->ReadParagraphContent, poResult);
+		GetRunStringWriter().WriteString(std::wstring(_T("</w:rt>")));
+	}
+	else if ( c_oSerRubyType::rubyBase == type )
+	{
+		GetRunStringWriter().WriteString(std::wstring(_T("<w:rubyBase>")));	
+		READ1_DEF(length, res, this->ReadParagraphContent, poResult);
+		GetRunStringWriter().WriteString(std::wstring(_T("</w:rubyBase>")));
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;		
+	return res;
+}
+int Binary_DocumentTableReader::ReadRubyPr(BYTE type, long length, void* poResult)
+{
+	int res = c_oSerConstants::ReadOk;
+	if (  c_oSerProp_rubyPrType::Hps == type )
+	{
+		LONG nHps = m_oBufferedStream.GetLong();		
+		GetRunStringWriter().WriteString(std::wstring(_T("<w:hps w:val=\"" + std::to_wstring(nHps) + L"\"/>")));
+	}
+	else if (  c_oSerProp_rubyPrType::HpsRaise == type )
+	{
+		LONG nHpsRaise = m_oBufferedStream.GetLong();		
+		GetRunStringWriter().WriteString(std::wstring(_T("<w:hpsRaise w:val=\"" + std::to_wstring(nHpsRaise) + L"\"/>")));
+	}
+	else if (  c_oSerProp_rubyPrType::HpsBaseText == type )
+	{
+		LONG nHpsBaseText = m_oBufferedStream.GetLong();		
+		GetRunStringWriter().WriteString(std::wstring(_T("<w:hpsBaseText w:val=\"" + std::to_wstring(nHpsBaseText) + L"\"/>")));
+	}
+	else if (  c_oSerProp_rubyPrType::RubyAlign == type )
+	{
+		SimpleTypes::CRubyAlign oRubyAlign;
+		oRubyAlign.SetValueFromByte(m_oBufferedStream.GetUChar());
+		GetRunStringWriter().WriteString(std::wstring(_T("<w:rubyAlign w:val=\"" + oRubyAlign.ToString() + L"\"/>")));
+	}
+	else if (  c_oSerProp_rubyPrType::Lid == type )
+	{
+		std::wstring sLid = m_oBufferedStream.GetString3(length);
+		GetRunStringWriter().WriteString(std::wstring(_T("<w:lid w:val=\"" + sLid + L"\"/>")));
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+
 int Binary_DocumentTableReader::ReadFootnoteRef(BYTE type, long length, void* poResult)
 {
 	OOX::Logic::CFootnoteReference* pFootnoteRef = static_cast<OOX::Logic::CFootnoteReference*>(poResult);
