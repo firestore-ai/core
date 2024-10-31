@@ -72,7 +72,7 @@ namespace OOX
 
 			sResult += _T("w:type=\"");
 			sResult += m_oType.ToString();
-			sResult += _T("\" />");
+			sResult += _T("\"/>");
 
 			return sResult;
 		}
@@ -153,7 +153,7 @@ namespace OOX
 				sResult += L"\" ";
 			}
 
-			sResult += L" />";
+			sResult += L"/>";
 
 			return sResult;
 		}
@@ -184,7 +184,7 @@ namespace OOX
 		}
 		std::wstring CCr::toXML() const
 		{
-			return _T("<w:cr />");
+			return _T("<w:cr/>");
 		}
 		EElementType CCr::getType() const
 			{
@@ -207,7 +207,7 @@ namespace OOX
 		}
 		std::wstring CDayLong::toXML() const
 		{
-			return _T("<w:dayLong />");
+			return _T("<w:dayLong/>");
 		}
 		EElementType CDayLong::getType() const
 			{
@@ -230,7 +230,7 @@ namespace OOX
 		}
 		std::wstring CDayShort::toXML() const
 		{
-			return _T("<w:dayShort />");
+			return _T("<w:dayShort/>");
 		}
 		EElementType CDayShort::getType() const
 			{
@@ -318,7 +318,7 @@ namespace OOX
 		}
 		std::wstring CLastRenderedPageBreak::toXML() const
 		{
-			return _T("<w:lastRenderedPageBreak />");
+			return _T("<w:lastRenderedPageBreak/>");
 		}
 		EElementType CLastRenderedPageBreak::getType() const
 		{
@@ -341,7 +341,7 @@ namespace OOX
 		}
 		std::wstring CMonthLong::toXML() const
 		{
-			return _T("<w:monthLong />");
+			return _T("<w:monthLong/>");
 		}
 		EElementType CMonthLong::getType() const
 		{
@@ -364,7 +364,7 @@ namespace OOX
 		}
 		std::wstring CMonthShort::toXML() const
 		{
-			return _T("<w:monthShort />");
+			return _T("<w:monthShort/>");
 		}
 		EElementType CMonthShort::getType() const
 		{
@@ -387,7 +387,7 @@ namespace OOX
 		}
 		std::wstring CNoBreakHyphen::toXML() const
 		{
-			return _T("<w:noBreakHyphen />");
+			return _T("<w:noBreakHyphen/>");
 		}
 		EElementType CNoBreakHyphen::getType() const
 		{
@@ -410,7 +410,7 @@ namespace OOX
 		}
 		std::wstring CPgNum::toXML() const
 		{
-			return _T("<w:pgNum />");
+			return _T("<w:pgNum/>");
 		}
 		EElementType CPgNum::getType() const
 		{
@@ -478,7 +478,6 @@ namespace OOX
 				oReader.MoveToElement();
 			}
 
-		
 
 		//--------------------------------------------------------------------------------
 		// CSoftHyphen 17.3.3.29 (Part 1)
@@ -496,7 +495,7 @@ namespace OOX
 		}
 		std::wstring CSoftHyphen::toXML() const
 		{
-			return _T("<w:softHyphen />");
+			return _T("<w:softHyphen/>");
 		}
 		EElementType CSoftHyphen::getType() const
 		{
@@ -651,7 +650,7 @@ namespace OOX
 		}
 		std::wstring CTab::toXML() const
 		{
-			return _T("<w:tab />");
+			return _T("<w:tab/>");
 		}
 		EElementType CTab::getType() const
 		{
@@ -674,7 +673,7 @@ namespace OOX
 		}
 		std::wstring CYearLong::toXML() const
 		{
-			return _T("<w:yearLong />");
+			return _T("<w:yearLong/>");
 		}
 		EElementType CYearLong::getType() const
 		{
@@ -697,7 +696,7 @@ namespace OOX
 		}
 		std::wstring CYearShort::toXML() const
 		{
-			return _T("<w:yearShort />");
+			return _T("<w:yearShort/>");
 		}
 		EElementType CYearShort::getType() const
 		{
@@ -720,7 +719,7 @@ namespace OOX
 		}
 		std::wstring CAnnotationRef::toXML() const
 		{
-			return _T("<w:annotationRef />");
+			return _T("<w:annotationRef/>");
 		}
 		EElementType CAnnotationRef::getType() const
 		{
@@ -800,7 +799,7 @@ namespace OOX
 		}
 		std::wstring CContinuationSeparator::toXML() const
 		{
-			return _T("<w:continuationSeparator />");
+			return _T("<w:continuationSeparator/>");
 		}
 		EElementType CContinuationSeparator::getType() const
 		{
@@ -888,7 +887,7 @@ namespace OOX
 		}
 		std::wstring CEndnoteRef::toXML() const
 		{
-			return _T("<w:endnoteRef />");
+			return _T("<w:endnoteRef/>");
 		}
 		EElementType CEndnoteRef::getType() const
 		{
@@ -974,7 +973,7 @@ namespace OOX
 		}
 		std::wstring CFootnoteRef::toXML() const
 		{
-			return _T("<w:footnoteRef />");
+			return _T("<w:footnoteRef/>");
 		}
 		EElementType CFootnoteRef::getType() const
 		{
@@ -1125,7 +1124,7 @@ namespace OOX
 		}
 		std::wstring CSeparator::toXML() const
 		{
-			return _T("<w:separator />");
+			return _T("<w:separator/>");
 		}
 
 		EElementType CSeparator::getType() const
