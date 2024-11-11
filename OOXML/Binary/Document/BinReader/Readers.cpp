@@ -1031,11 +1031,6 @@ int Binary_pPrReader::ReadContent(BYTE type, long length, void* poResult)
 		pPPr->m_oOutlineLvl.Init();
 		pPPr->m_oOutlineLvl->m_oVal = m_oBufferedStream.GetLong();
 	}break;
-	case c_oSerProp_pPrType::DivId:
-	{
-		pPPr->m_oDivID.Init();
-		pPPr->m_oDivID->m_oVal = m_oBufferedStream.GetLong();
-	}break;
 	case c_oSerProp_pPrType::SuppressLineNumbers:
 	{
 		pPPr->m_oSuppressLineNumbers.Init();
@@ -2526,15 +2521,6 @@ int Binary_tblPrReader::Read_RowPr(BYTE type, long length, void* poResult)
             pCStringWriter->WriteString(std::wstring(_T("<w:cantSplit />")));
 		else
             pCStringWriter->WriteString(std::wstring(_T("<w:cantSplit w:val=\"false\"/>")));
-	}
-	else if ( c_oSerProp_rowPrType::DivId == type)
-	{
-		long divId = m_oBufferedStream.GetLong();
-		if (divId > 0)
-		{
-			pCStringWriter->WriteString(L"<w:divId w:val=\"" + std::to_wstring(divId) + L"\"/>");				
-			m_oWebSettingsWriter.AddDiv(std::to_wstring(divId));
-		}
 	}
 	else if ( c_oSerProp_rowPrType::After == type )
 	{

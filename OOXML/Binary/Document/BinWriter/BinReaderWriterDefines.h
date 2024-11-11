@@ -455,8 +455,7 @@ extern int g_nCurFormatVersion;
 		trPrChange = 17,
 		TableCellSpacingTwips = 18,
 		Height_ValueTwips = 19,
-		CnfStyle = 20,
-		DivId = 21
+		CnfStyle = 20
 	};}
 	namespace c_oSerProp_cellPrType{enum c_oSerProp_cellPrType
 	{
