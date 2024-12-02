@@ -881,7 +881,7 @@ int Binary_rPrReader::ReadContent(BYTE type, long length, void* poResult)
 		}break;
 		case c_oSerProp_rPrType::Em:
 		{
-			pPPr->m_oEm.Init(); pRPr->m_oEm->m_oVal.Init();
+			pRPr->m_oEm.Init(); pRPr->m_oEm->m_oVal.Init();
 			pRPr->m_oEm->m_oVal->SetValueFromByte(m_oBufferedStream.GetUChar());
 		}break;		
 		default:
