@@ -924,6 +924,17 @@ void Binary_rPrWriter::Write_rPr(OOX::Logic::CRunProperty* rPr)
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
 		m_oBcw.m_oStream.WriteLONG(rPr->m_oKern.get().m_oVal.get().ToHps());
 	}
+	//Em
+	if (false != rPr->m_oEm.IsInit())
+	{
+		const ComplexTypes::Word::CEm& oEm = rPr->m_oEm.get();
+		if (oEm.m_oVal.IsInit())
+		{
+			m_oBcw.m_oStream.WriteBYTE(c_oSerProp_rPrType::Em);
+			m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+			m_oBcw.m_oStream.WriteBYTE(oEm.m_oVal.get().GetValue());
+		}
+	}
 }
 void Binary_rPrWriter::Write_rPrChange(const OOX::Logic::CRPrChange& rPrChange)
 {

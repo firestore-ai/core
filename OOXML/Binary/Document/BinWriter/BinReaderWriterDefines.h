@@ -417,7 +417,8 @@ extern int g_nCurFormatVersion;
 		Glow = 53,
 		Props3d = 54,
 		Scene3d = 55,
-		Kern = 56
+		Kern = 56,
+		Em = 57
 	};}
 	namespace c_oSerRubyType{enum c_oSerRubyType
 	{
@@ -515,13 +516,6 @@ extern int g_nCurFormatVersion;
 		Distance = 1,
 		Restart = 2,
 		Start = 3
-	};}
-	namespace c_oSerProp_secPrDocGridType{enum c_oSerProp_secPrDocGridType 
-	{
-		Type = 0,
-		linePitch = 1,
-		charSpace = 2
-	
 	};}
 	namespace c_oSerParType{enum c_oSerParType
 	{
