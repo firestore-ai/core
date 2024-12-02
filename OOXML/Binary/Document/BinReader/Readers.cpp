@@ -879,7 +879,11 @@ int Binary_rPrReader::ReadContent(BYTE type, long length, void* poResult)
 			pRPr->m_oKern.Init(); pRPr->m_oKern->m_oVal.Init();
 			pRPr->m_oKern->m_oVal->FromHps(m_oBufferedStream.GetLong());
 		}break;
-		
+		case c_oSerProp_rPrType::Em:
+		{
+			pPPr->m_oEm.Init(); pRPr->m_oEm->m_oVal.Init();
+			pRPr->m_oEm->m_oVal->SetValueFromByte(m_oBufferedStream.GetUChar());
+		}break;		
 		default:
 		res = c_oSerConstants::ReadUnknown;
 		break;
