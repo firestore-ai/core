@@ -1055,6 +1055,12 @@ int Binary_pPrReader::ReadContent(BYTE type, long length, void* poResult)
 		pPPr->m_oBidi.Init();
 		pPPr->m_oBidi->m_oVal.FromBool(m_oBufferedStream.GetBool());
 	}break;
+	case c_oSerProp_pPrType::TextAlignment:
+	{
+		pPPr->m_oTextAlignment.Init();
+		pPPr->m_oTextAlignment->m_oVal.Init();
+		pPPr->m_oTextAlignment->m_oVal->SetValueFromByte(m_oBufferedStream.GetUChar());
+	}break;
 	default:
 		res = c_oSerConstants::ReadUnknown;
 		break;

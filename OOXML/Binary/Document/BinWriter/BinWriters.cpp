@@ -925,15 +925,11 @@ void Binary_rPrWriter::Write_rPr(OOX::Logic::CRunProperty* rPr)
 		m_oBcw.m_oStream.WriteLONG(rPr->m_oKern.get().m_oVal.get().ToHps());
 	}
 	//Em
-	if (false != rPr->m_oEm.IsInit())
+	if (rPr->m_oEm.IsInit() && rPr->m_oEm->m_oVal.IsInit())
 	{
-		const ComplexTypes::Word::CEm& oEm = rPr->m_oEm.get();
-		if (oEm.m_oVal.IsInit())
-		{
-			m_oBcw.m_oStream.WriteBYTE(c_oSerProp_rPrType::Em);
-			m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-			m_oBcw.m_oStream.WriteBYTE(oEm.m_oVal.get().GetValue());
-		}
+		m_oBcw.m_oStream.WriteBYTE(c_oSerProp_rPrType::Em);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBYTE((BYTE)rPr->m_oEm->m_oVal->GetValue());		
 	}
 }
 void Binary_rPrWriter::Write_rPrChange(const OOX::Logic::CRPrChange& rPrChange)
@@ -1171,6 +1167,12 @@ void Binary_pPrWriter::Write_pPr(const OOX::Logic::CParagraphProperty& pPr)
 		m_oBcw.m_oStream.WriteBYTE(c_oSerProp_pPrType::Bidi);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
 		m_oBcw.m_oStream.WriteBOOL(pPr.m_oBidi->m_oVal.ToBool());
+	}
+	if (pPr.m_oTextAlignment.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerProp_pPrType::TextAlignment);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBYTE((BYTE)(pPr.m_oTextAlignment->m_oVal.GetValue()));
 	}
 }
 void Binary_pPrWriter::WritePPrChange(const OOX::Logic::CPPrChange& pPrChange)

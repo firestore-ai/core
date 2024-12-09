@@ -357,7 +357,8 @@ extern int g_nCurFormatVersion;
 		SnapToGrid = 46,
 		Bidi = 47,
 		Spacing_AfterLines = 48,
-		Spacing_BeforeLines = 49
+		Spacing_BeforeLines = 49,
+		TextAlignment = 50
 	};}
 	namespace c_oSerProp_rPrType{enum c_oSerProp_rPrType
 	{
