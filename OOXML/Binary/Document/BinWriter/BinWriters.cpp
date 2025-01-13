@@ -1174,6 +1174,13 @@ void Binary_pPrWriter::Write_pPr(const OOX::Logic::CParagraphProperty& pPr)
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
 		m_oBcw.m_oStream.WriteBYTE((BYTE)(pPr.m_oTextAlignment->m_oVal.get().GetValue()));
 	}
+//WordWrap
+	if (false != pPr.m_oWordWrap.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerProp_pPrType::WordWrap);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBOOL(SimpleTypes::onoffTrue == pPr.m_oWordWrap.get().m_oVal.GetValue());
+	}
 }
 void Binary_pPrWriter::WritePPrChange(const OOX::Logic::CPPrChange& pPrChange)
 {

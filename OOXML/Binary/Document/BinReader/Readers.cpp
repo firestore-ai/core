@@ -1061,6 +1061,11 @@ int Binary_pPrReader::ReadContent(BYTE type, long length, void* poResult)
 		pPPr->m_oTextAlignment->m_oVal.Init();
 		pPPr->m_oTextAlignment->m_oVal->SetValueFromByte(m_oBufferedStream.GetUChar());
 	}break;
+	case c_oSerProp_pPrType::WordWrap:
+	{
+		pPPr->m_oWordWrap.Init();
+		pPPr->m_oWordWrap->m_oVal.FromBool(m_oBufferedStream.GetBool());
+	}break;
 	default:
 		res = c_oSerConstants::ReadUnknown;
 		break;

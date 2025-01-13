@@ -358,7 +358,8 @@ extern int g_nCurFormatVersion;
 		Bidi = 47,
 		Spacing_AfterLines = 48,
 		Spacing_BeforeLines = 49,
-		TextAlignment = 50
+		TextAlignment = 50,
+		WordWrap = 51
 	};}
 	namespace c_oSerProp_rPrType{enum c_oSerProp_rPrType
 	{
