@@ -81,6 +81,18 @@ namespace PPTX
 				}
 			}
 
+			if (ea.typeface.empty())
+			{
+				for (const auto& font : Fonts)
+				{
+					if (font.script == _T("Hans"))
+					{
+						ea.typeface = font.typeface;
+						break;
+					}
+				}
+			}
+
 			FillParentPointersForChilds();
 		}
 		std::wstring FontCollection::toXML() const
